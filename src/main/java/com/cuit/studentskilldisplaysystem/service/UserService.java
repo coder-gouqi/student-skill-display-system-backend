@@ -19,4 +19,19 @@ public interface UserService extends IService<User> {
      * @return
      */
     UserVo userLogin(UserLoginRequest userLoginRequest, HttpServletRequest request);
+
+    /**
+     * 获取当前登录用户
+     *
+     * @param request
+     * @return
+     */
+    UserVo getLoginUser(HttpServletRequest request);
+
+    /**
+     * 用户注销登录
+     *
+     * @return
+     */
+    Boolean userLogout(HttpServletRequest request);
 }

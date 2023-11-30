@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
  * MyBatis Plus 配置
  */
 @Configuration
-@MapperScan("com.goat.mapper")
+@MapperScan("com.cuit.studentskilldisplaysystem.mapper")
 public class MyBatisPlusConfig {
 
     /**
