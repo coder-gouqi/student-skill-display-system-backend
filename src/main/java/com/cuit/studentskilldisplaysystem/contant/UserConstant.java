@@ -10,6 +10,9 @@ public interface UserConstant {
      */
     String USER_LOGIN_STATE = "userLoginState";
 
+    String ROLE_STUDENT = "student";
+
+    String ROLE_ADMIN = "admin";
 
     /**
      * 默认权限

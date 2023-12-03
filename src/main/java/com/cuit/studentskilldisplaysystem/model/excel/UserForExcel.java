@@ -13,12 +13,6 @@ public class UserForExcel {
     private String userName;
 
     /**
-     * 用户角色
-     */
-    @ExcelProperty("用户角色")
-    private String userRole;
-
-    /**
      * 学生学号
      */
     @ExcelProperty("学生学号")
@@ -39,12 +33,7 @@ public class UserForExcel {
     /**
      * 学生年级
      */
-    @ExcelProperty("学生班级")
+    @ExcelProperty("学生年级")
     private String studentGrade;
 
-    /**
-     * 学生头像
-     */
-    @ExcelProperty("学生头像")
-    private String studentPhoto;
 }
