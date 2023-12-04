@@ -2,6 +2,7 @@ package com.cuit.studentskilldisplaysystem.service.impl;
 
 import cn.hutool.core.lang.UUID;
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.support.ExcelTypeEnum;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cuit.studentskilldisplaysystem.mapper.CourseMapper;
@@ -10,12 +11,14 @@ import com.cuit.studentskilldisplaysystem.model.domain.Course;
 import com.cuit.studentskilldisplaysystem.model.domain.SkillIndex;
 import com.cuit.studentskilldisplaysystem.model.excel.CourseForExcel;
 import com.cuit.studentskilldisplaysystem.service.CourseService;
-import com.cuit.studentskilldisplaysystem.service.ExcelService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +27,7 @@ import java.util.List;
  */
 @Service
 public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course>
-        implements CourseService, ExcelService {
+        implements CourseService {
 
     @Resource
     private SkillIndexMapper skillIndexMapper;
@@ -58,6 +61,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course>
                 //其他属性赋值
                 course.setCourseName(courseForExcel.getCourseName());
                 course.setCourseWeight(courseForExcel.getCourseWeight());
+                course.setIsDelete(0);
                 //将完成赋值的课程数据添加到数组
                 list.add(course);
             }
@@ -71,9 +75,46 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course>
     }
 
     @Override
-    public Boolean exportData() {
-        return null;
+    public Boolean exportData(HttpServletResponse response) {
+        QueryWrapper<Course> courseQueryWrapper = new QueryWrapper<>();
+        List<Course> courseList = courseMapper.selectList(courseQueryWrapper);
+        QueryWrapper<SkillIndex> skillIndexQueryWrapper = new QueryWrapper<>();
+        List<SkillIndex> skillIndexList = skillIndexMapper.selectList(skillIndexQueryWrapper);
+        try {
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.setCharacterEncoding("utf-8");
+            // 设置防止中文名乱码
+            String filename = null;
+            filename = URLEncoder.encode("course", "utf-8");
+            // 文件下载方式(附件下载还是在当前浏览器打开)
+            response.setHeader("Content-disposition", "attachment;filename=" +
+                    filename + ".xlsx");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        try {
+            ArrayList<CourseForExcel> courseForExcelList = new ArrayList<>();
+            for (Course course : courseList) {
+                CourseForExcel courseForExcel = new CourseForExcel();
+                for (SkillIndex skillIndex : skillIndexList) {
+                    if (course.getCourseSkillIndexId().equals(skillIndex.getId())) {
+                        courseForExcel.setCourseSkillIndexName(skillIndex.getSkillIndexName());
+                    }
+                    courseForExcel.setCourseName(course.getCourseName());
+                    courseForExcel.setCourseWeight(course.getCourseWeight());
+                    courseForExcelList.add(courseForExcel);
+                }
+            }
+            EasyExcel.write(response.getOutputStream(), CourseForExcel.class)
+                    .sheet("course")
+                    .doWrite(courseForExcelList);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
+
 }
 
 

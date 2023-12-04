@@ -21,8 +21,11 @@ server:
   servlet:
     context-path: /system
 mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
   configuration:
     map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    call-setters-on-nulls: true
   global-config:
     db-config:
       logic-delete-field: isDelete

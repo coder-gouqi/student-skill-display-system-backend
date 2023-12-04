@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.cuit.studentskilldisplaysystem.model.domain.User;
 import com.cuit.studentskilldisplaysystem.model.dto.UserLoginRequest;
 import com.cuit.studentskilldisplaysystem.model.vo.UserVo;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @description 针对表【user】的数据库操作Service
@@ -34,4 +36,19 @@ public interface UserService extends IService<User> {
      * @return
      */
     Boolean userLogout(HttpServletRequest request);
+
+    /**
+     * 导入数据
+     *
+     * @param file
+     * @return
+     */
+    Boolean importData(MultipartFile file);
+
+    /**
+     * 导出数据
+     *
+     * @return
+     */
+    Boolean exportData(HttpServletResponse response);
 }

@@ -1,15 +1,16 @@
 package com.cuit.studentskilldisplaysystem.model.domain;
 
-import com.baomidou.mybatisplus.annotation.*;
-
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
- * 
  * @TableName skill
  */
-@TableName(value ="skill")
+@TableName(value = "skill")
 @Data
 public class Skill implements Serializable {
     /**
@@ -33,8 +34,8 @@ public class Skill implements Serializable {
     /**
      * 逻辑删除，0未删除，1已删除
      */
-    @TableLogic(value = "is_delete")
-    private String isDelete;
+    @TableField(value = "is_delete")
+    private Integer isDelete;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

@@ -11,12 +11,12 @@ import com.cuit.studentskilldisplaysystem.model.domain.Course;
 import com.cuit.studentskilldisplaysystem.model.domain.Score;
 import com.cuit.studentskilldisplaysystem.model.domain.User;
 import com.cuit.studentskilldisplaysystem.model.excel.ScoreForExcel;
-import com.cuit.studentskilldisplaysystem.service.ExcelService;
 import com.cuit.studentskilldisplaysystem.service.ScoreService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ import java.util.List;
  * @description 针对表【score】的数据库操作Service实现
  */
 @Service
-public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements ScoreService, ExcelService {
+public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements ScoreService {
 
     @Resource
     private ScoreMapper scoreMapper;
@@ -70,6 +70,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                 }
                 //其他属性赋值
                 score.setStudentScore(scoreForExcel.getStudentScore());
+                score.setIsDelete(0);
                 //将完成赋值的学生成绩数据添加到数组
                 list.add(score);
             }
@@ -83,7 +84,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
     }
 
     @Override
-    public Boolean exportData() {
+    public Boolean exportData(HttpServletResponse response) {
         return null;
     }
 }

@@ -14,13 +14,13 @@ import com.cuit.studentskilldisplaysystem.model.domain.User;
 import com.cuit.studentskilldisplaysystem.model.dto.UserLoginRequest;
 import com.cuit.studentskilldisplaysystem.model.excel.UserForExcel;
 import com.cuit.studentskilldisplaysystem.model.vo.UserVo;
-import com.cuit.studentskilldisplaysystem.service.ExcelService;
 import com.cuit.studentskilldisplaysystem.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ import static com.cuit.studentskilldisplaysystem.contant.UserConstant.USER_LOGIN
  * @description 针对表【user】的数据库操作Service实现
  */
 @Service
-public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService, ExcelService {
+public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     @Resource
     private UserMapper userMapper;
@@ -122,6 +122,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 user.setStudentNumber(userForExcel.getStudentNumber());
                 user.setStudentClass(user.getStudentClass());
                 user.setStudentGrade(user.getStudentGrade());
+                user.setIsDelete(0);
                 //将完成赋值的用户数据添加到数组
                 list.add(user);
             }
@@ -135,7 +136,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public Boolean exportData() {
+    public Boolean exportData(HttpServletResponse response) {
         return null;
     }
 }

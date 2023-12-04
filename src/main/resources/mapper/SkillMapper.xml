@@ -8,7 +8,7 @@
             <id property="id" column="id" jdbcType="INTEGER"/>
             <result property="studentId" column="student_id" jdbcType="VARCHAR"/>
             <result property="studentSkillScore" column="student_skill_score" jdbcType="VARCHAR"/>
-            <result property="isDelete" column="is_delete" jdbcType="VARCHAR"/>
+            <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
