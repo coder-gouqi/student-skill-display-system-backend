@@ -1,5 +1,6 @@
 package com.cuit.studentskilldisplaysystem.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cuit.studentskilldisplaysystem.common.StatusResponseCode;
@@ -13,7 +14,6 @@ import com.cuit.studentskilldisplaysystem.utils.SqlUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -48,9 +48,8 @@ public class AcademyServiceImpl extends ServiceImpl<AcademyMapper, Academy>
         String sortOrder = academyQueryRequest.getSortOrder();
 
         QueryWrapper<Academy> academyQueryWrapper = new QueryWrapper<>();
-
-        academyQueryWrapper.like("academy_name", academyName);
-        academyQueryWrapper.like("academy_info", academyInfo);
+        academyQueryWrapper.like(StrUtil.isNotBlank(academyName),"academy_name", academyName);
+        academyQueryWrapper.like(StrUtil.isNotBlank(academyInfo),"academy_info", academyInfo);
         academyQueryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
         return academyQueryWrapper;
 

@@ -33,7 +33,7 @@ public class AcademyController {
         return statusResponse;
     }
 
-    @PostMapping("/select")
+    @PostMapping("/list/page")
     public StatusResponse academySelect(@RequestBody AcademyQueryRequest academyQueryRequest) {
         StatusResponse statusResponse = new StatusResponse();
         long current = academyQueryRequest.getCurrent();
