@@ -93,17 +93,17 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course>
             e.printStackTrace();
         }
         try {
-            ArrayList<CourseForExcel> courseForExcelList = new ArrayList<>();
+            List<CourseForExcel> courseForExcelList = new ArrayList<>();
             for (Course course : courseList) {
                 CourseForExcel courseForExcel = new CourseForExcel();
                 for (SkillIndex skillIndex : skillIndexList) {
                     if (course.getCourseSkillIndexId().equals(skillIndex.getId())) {
                         courseForExcel.setCourseSkillIndexName(skillIndex.getSkillIndexName());
                     }
-                    courseForExcel.setCourseName(course.getCourseName());
-                    courseForExcel.setCourseWeight(course.getCourseWeight());
-                    courseForExcelList.add(courseForExcel);
                 }
+                courseForExcel.setCourseName(course.getCourseName());
+                courseForExcel.setCourseWeight(course.getCourseWeight());
+                courseForExcelList.add(courseForExcel);
             }
             EasyExcel.write(response.getOutputStream(), CourseForExcel.class)
                     .sheet("course")

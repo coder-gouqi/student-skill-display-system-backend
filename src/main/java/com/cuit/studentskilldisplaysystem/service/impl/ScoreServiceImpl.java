@@ -18,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,7 +87,49 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
 
     @Override
     public Boolean exportData(HttpServletResponse response) {
-        return null;
+        QueryWrapper<Score> scoreQueryWrapper = new QueryWrapper<>();
+        List<Score> scoreList = scoreMapper.selectList(scoreQueryWrapper);
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        List<User> userList = userMapper.selectList(userQueryWrapper);
+        QueryWrapper<Course> courseQueryWrapper = new QueryWrapper<>();
+        List<Course> courseList = courseMapper.selectList(courseQueryWrapper);
+        try {
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.setCharacterEncoding("utf-8");
+            // 设置防止中文名乱码
+            String filename = null;
+            filename = URLEncoder.encode("score", "utf-8");
+            // 文件下载方式(附件下载还是在当前浏览器打开)
+            response.setHeader("Content-disposition", "attachment;filename=" +
+                    filename + ".xlsx");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        try {
+            List<ScoreForExcel> scoreForExcelList = new ArrayList<>();
+            for (Score score : scoreList) {
+                ScoreForExcel scoreForExcel = new ScoreForExcel();
+                for (User user : userList) {
+                    if (score.getStudentId().equals(user.getId())) {
+                        scoreForExcel.setStudentName(user.getUserName());
+                    }
+                }
+                for (Course course : courseList) {
+                    if (score.getCourseId().equals(course.getId())) {
+                        scoreForExcel.setCourseName(course.getCourseName());
+                    }
+                }
+                scoreForExcel.setStudentScore(score.getStudentScore());
+                scoreForExcelList.add(scoreForExcel);
+            }
+            EasyExcel.write(response.getOutputStream(), ScoreForExcel.class)
+                    .sheet("score")
+                    .doWrite(scoreForExcelList);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }
 
