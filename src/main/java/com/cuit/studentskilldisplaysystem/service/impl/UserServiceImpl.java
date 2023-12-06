@@ -22,6 +22,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -137,7 +139,45 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public Boolean exportData(HttpServletResponse response) {
-        return null;
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        List<User> userList = userMapper.selectList(userQueryWrapper);
+        QueryWrapper<Academy> academyQueryWrapper = new QueryWrapper<>();
+        List<Academy> academyList = academyMapper.selectList(academyQueryWrapper);
+        try {
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.setCharacterEncoding("utf-8");
+            // 设置防止中文名乱码
+            String filename = null;
+            filename = URLEncoder.encode("user", "utf-8");
+            // 文件下载方式(附件下载还是在当前浏览器打开)
+            response.setHeader("Content-disposition", "attachment;filename=" +
+                    filename + ".xlsx");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        try {
+            List<UserForExcel> userForExcelList = new ArrayList<>();
+            for (User user : userList) {
+                UserForExcel userForExcel = new UserForExcel();
+                for (Academy academy : academyList) {
+                    if (user.getStudentAcademyId().equals(academy.getId())) {
+                        userForExcel.setStudentAcademy(academy.getAcademyName());
+                    }
+                }
+                userForExcel.setUserName(user.getUserName());
+                userForExcel.setStudentNumber(user.getStudentNumber());
+                userForExcel.setStudentClass(user.getStudentClass());
+                userForExcel.setStudentGrade(user.getStudentGrade());
+                userForExcelList.add(userForExcel);
+            }
+            EasyExcel.write(response.getOutputStream(), UserForExcel.class)
+                    .sheet("user")
+                    .doWrite(userForExcelList);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }
 
