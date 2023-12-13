@@ -36,6 +36,13 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course>
     private CourseMapper courseMapper;
 
     @Override
+    public List<Course> selectAll() {
+        QueryWrapper<Course> courseQueryWrapper = new QueryWrapper<>();
+        List<Course> courseList = courseMapper.selectList(courseQueryWrapper);
+        return courseList;
+    }
+
+    @Override
     public Boolean importData(MultipartFile file) {
         try {
             //读取excel数据,返回数组

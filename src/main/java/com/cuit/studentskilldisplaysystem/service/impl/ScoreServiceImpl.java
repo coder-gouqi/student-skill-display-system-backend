@@ -39,6 +39,13 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
     private CourseMapper courseMapper;
 
     @Override
+    public List<Score> selectAll() {
+        QueryWrapper<Score> scoreQueryWrapper = new QueryWrapper<>();
+        List<Score> scoreList = scoreMapper.selectList(scoreQueryWrapper);
+        return scoreList;
+    }
+
+    @Override
     public Boolean importData(MultipartFile file) {
         try {
             //读取excel数据,返回数组
