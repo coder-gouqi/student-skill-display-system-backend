@@ -3,6 +3,7 @@ package com.cuit.studentskilldisplaysystem.service;
 import com.cuit.studentskilldisplaysystem.common.DeleteRequest;
 import com.cuit.studentskilldisplaysystem.model.domain.Course;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cuit.studentskilldisplaysystem.model.domain.Score;
 import com.cuit.studentskilldisplaysystem.model.dto.course.CourseAddRequest;
 import com.cuit.studentskilldisplaysystem.model.dto.course.CourseQueryRequest;
 import com.cuit.studentskilldisplaysystem.model.dto.course.CourseUpdateRequest;
@@ -32,6 +33,12 @@ public interface CourseService extends IService<Course> {
      */
     Boolean exportData(HttpServletResponse response);
 
+    /**
+     * 查询所有课程的数据
+     *
+     * @return
+     */
+    List<Course> selectAll();
 
     /**
      *添加课程
