@@ -16,4 +16,39 @@
         id,course_name,course_skill_index_id,
         course_weight,is_delete
     </sql>
+
+    <insert id="insert" parameterType="object">
+        insert into course (id,course_name,course_skill_index_id,
+                            course_weight,is_delete)
+        values (#{id}, #{courseName}, #{courseSkillIndexId}, #{courseWeight}, #{isDelete})
+    </insert>
+
+    <select id="select" resultType="com.cuit.studentskilldisplaysystem.model.domain.Course">
+        select *
+        from course
+        where is_delete = 0
+    </select>
+
+    <select id="selectById" resultType="com.cuit.studentskilldisplaysystem.model.domain.Course">
+        select *
+        from course
+        where is_delete = 0
+          and id = #{id}
+    </select>
+
+    <update id="updateById">
+        update course
+        set course_name   = #{courseName},
+            course_skill_index_id     = #{courseSkillIndexId},
+            course_weight   = #{courseWeight},
+            is_delete = #{isDelete}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="object">
+        update course
+        set is_delete = 1
+        where id = #{id}
+    </delete>
+
 </mapper>

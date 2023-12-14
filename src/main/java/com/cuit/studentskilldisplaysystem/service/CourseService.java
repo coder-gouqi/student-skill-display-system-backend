@@ -1,7 +1,11 @@
 package com.cuit.studentskilldisplaysystem.service;
 
+import com.cuit.studentskilldisplaysystem.common.DeleteRequest;
 import com.cuit.studentskilldisplaysystem.model.domain.Course;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cuit.studentskilldisplaysystem.model.dto.course.CourseAddRequest;
+import com.cuit.studentskilldisplaysystem.model.dto.course.CourseQueryRequest;
+import com.cuit.studentskilldisplaysystem.model.dto.course.CourseUpdateRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -26,4 +30,30 @@ public interface CourseService extends IService<Course> {
      * @return
      */
     Boolean exportData(HttpServletResponse response);
+
+
+    /**
+     *添加课程
+     *
+     * @return
+     */
+    Boolean courseAdd(CourseAddRequest courseAddRequest);
+
+    /**
+     * 修改课程
+     *
+     * @return
+     */
+    Boolean courseUpdate(CourseUpdateRequest courseUpdateRequest);
+
+    /**
+     * 查看课程
+     */
+    List<Course> courseSelect(CourseQueryRequest courseQueryRequest);
+
+    Course courseSelectById(String id);
+    /**
+     * 删除课程
+     */
+    Boolean courseDelete(DeleteRequest deleteRequest);
 }

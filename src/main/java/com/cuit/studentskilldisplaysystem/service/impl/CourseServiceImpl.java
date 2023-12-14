@@ -1,14 +1,19 @@
 package com.cuit.studentskilldisplaysystem.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cuit.studentskilldisplaysystem.common.DeleteRequest;
 import com.cuit.studentskilldisplaysystem.mapper.CourseMapper;
 import com.cuit.studentskilldisplaysystem.mapper.SkillIndexMapper;
 import com.cuit.studentskilldisplaysystem.model.domain.Course;
 import com.cuit.studentskilldisplaysystem.model.domain.SkillIndex;
+import com.cuit.studentskilldisplaysystem.model.dto.course.CourseAddRequest;
+import com.cuit.studentskilldisplaysystem.model.dto.course.CourseQueryRequest;
+import com.cuit.studentskilldisplaysystem.model.dto.course.CourseUpdateRequest;
 import com.cuit.studentskilldisplaysystem.model.excel.CourseForExcel;
 import com.cuit.studentskilldisplaysystem.service.CourseService;
 import org.springframework.stereotype.Service;
@@ -19,6 +24,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,6 +122,44 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course>
         return true;
     }
 
+    @Override
+    public Boolean courseAdd(CourseAddRequest courseAddRequest) {
+        Course course = new Course();
+        BeanUtil.copyProperties(courseAddRequest, course);
+        String id = UUID.randomUUID().toString().replace("-", "");
+        course.setId(id);
+        course.setIsDelete(0);
+        int insert = courseMapper.insert(course);
+        return insert > 0;
+    }
+
+    @Override
+    public Boolean courseUpdate(CourseUpdateRequest courseUpdateRequest) {
+        Course course = courseMapper.selectById(courseUpdateRequest.getId());
+        course.setCourseName(courseUpdateRequest.getCourseName());
+        course.setCourseSkillIndexId(courseUpdateRequest.getCourseSkillIndexId());
+        course.setCourseWeight(courseUpdateRequest.getCourseWeight());
+        int result = courseMapper.updateById(course);
+        return result > 0;
+    }
+
+    @Override
+    public List<Course> courseSelect(CourseQueryRequest courseQueryRequest) {
+        List<Course> essayList = courseMapper.select(courseQueryRequest);
+        return essayList;
+    }
+
+    @Override
+    public Course courseSelectById(String id) {
+        Course course = courseMapper.selectById(id);
+        return course;
+    }
+
+    @Override
+    public Boolean courseDelete(DeleteRequest deleteRequest) {
+        int delete = courseMapper.deleteById(deleteRequest);
+        return delete > 0;
+    }
 }
 
 

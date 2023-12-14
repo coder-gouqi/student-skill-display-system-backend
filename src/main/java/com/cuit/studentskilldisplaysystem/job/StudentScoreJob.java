@@ -25,8 +25,6 @@ public class StudentScoreJob {
 
     }
 
-
-
     //取出对应的指标id
 
     //课程表中指标id为这个的课程id

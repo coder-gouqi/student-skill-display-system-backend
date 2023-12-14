@@ -16,4 +16,43 @@
         id,student_id,course_id,
         student_score,is_delete
     </sql>
+
+    <insert id="insert" parameterType="object">
+        insert into comment (id,student_id,course_id,student_score,is_delete)
+        values (#{id}, #{studentId}, #{courseId}, #{studentScore},#{isDelete})
+    </insert>
+
+    <select id="select" resultType="com.cuit.studentskilldisplaysystem.model.domain.Score">
+        select *
+        from score
+        where is_delete=0
+        <if test="studentId != null and studentId!=''">
+            and student_id=#{studentId}
+        </if>
+        <if test="courseId != null and courseId!=''">
+            and course_id=#{courseId}
+        </if>
+    </select>
+
+    <select id="selectById" resultType="com.cuit.studentskilldisplaysystem.model.domain.Score">
+        select *
+        from score
+        where is_delete = 0
+          and id = #{id}
+    </select>
+
+    <update id="updateById">
+        update score
+        set student_id  = #{studentId},
+            course_id   = #{courseId},
+            student_score   = #{studentScore},
+            is_delete = #{isDelete}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="object">
+        update score
+        set is_delete = 1
+        where id = #{id}
+    </delete>
 </mapper>
