@@ -17,7 +17,7 @@ public class Skill implements Serializable {
      * 技能展示id
      */
     @TableId(value = "id")
-    private Integer id;
+    private String id;
 
     /**
      * 学生姓名

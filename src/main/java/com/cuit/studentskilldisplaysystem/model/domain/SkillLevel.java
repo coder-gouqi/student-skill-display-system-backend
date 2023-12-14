@@ -17,7 +17,7 @@ public class SkillLevel implements Serializable {
      * 技能等级id
      */
     @TableId(value = "id")
-    private Integer id;
+    private String id;
 
     /**
      * 技能等级

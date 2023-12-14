@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.cuit.studentskilldisplaysystem.model.dto.course.CourseAddRequest;
 import com.cuit.studentskilldisplaysystem.model.dto.course.CourseQueryRequest;
 import com.cuit.studentskilldisplaysystem.model.dto.course.CourseUpdateRequest;
+import com.cuit.studentskilldisplaysystem.model.domain.SkillIndex;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
