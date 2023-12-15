@@ -1,18 +1,21 @@
 package com.cuit.studentskilldisplaysystem.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cuit.studentskilldisplaysystem.common.DeleteRequest;
 import com.cuit.studentskilldisplaysystem.common.StatusResponse;
 import com.cuit.studentskilldisplaysystem.common.StatusResponseCode;
+import com.cuit.studentskilldisplaysystem.model.domain.Course;
 import com.cuit.studentskilldisplaysystem.model.domain.Score;
-import com.cuit.studentskilldisplaysystem.model.dto.score.ScoreAddRequest;
+import com.cuit.studentskilldisplaysystem.model.domain.SkillIndex;
+import com.cuit.studentskilldisplaysystem.model.dto.course.CourseQueryRequest;
 import com.cuit.studentskilldisplaysystem.model.dto.score.ScoreQueryRequest;
-import com.cuit.studentskilldisplaysystem.model.dto.score.ScoreUpdateRequest;
+import com.cuit.studentskilldisplaysystem.model.dto.skillIndex.SkillIndexQueryRequest;
+import com.cuit.studentskilldisplaysystem.model.vo.ScoreVo;
 import com.cuit.studentskilldisplaysystem.service.ScoreService;
+import com.cuit.studentskilldisplaysystem.service.SkillIndexService;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -23,13 +26,28 @@ public class ScoreController {
     @Resource
     private ScoreService scoreService;
 
+
     @PostMapping("/add")
-    @ResponseBody
-    public StatusResponse commentAdd(@RequestBody ScoreAddRequest scoreAddRequest) {
+    public StatusResponse scoreAdd(@RequestBody Score score) {
         StatusResponse statusResponse = new StatusResponse();
-        Boolean result = scoreService.scoreAdd(scoreAddRequest);
-        statusResponse.setData(result);
+        boolean result = scoreService.scoreAdd(score);
         if (result) {
+            statusResponse.setData(result);
+            statusResponse.setMsgAndCode(StatusResponseCode.SUCCESS);
+        } else {
+            statusResponse.setMsgAndCode(StatusResponseCode.ERROR);
+        }
+        return statusResponse;
+    }
+
+    @PostMapping("/list/page")
+    public StatusResponse scoreSelectByPage(@RequestBody ScoreQueryRequest scoreQueryRequest) {
+        StatusResponse statusResponse = new StatusResponse();
+        long current = scoreQueryRequest.getCurrent();
+        long pageSize = scoreQueryRequest.getPageSize();
+        Page<Score> scoreList = scoreService.page(new Page<>(current, pageSize), scoreService.getQueryWrapper(scoreQueryRequest));
+        if (scoreList != null) {
+            statusResponse.setData(scoreList);
             statusResponse.setMsgAndCode(StatusResponseCode.SUCCESS);
         } else {
             statusResponse.setMsgAndCode(StatusResponseCode.ERROR);
@@ -38,41 +56,24 @@ public class ScoreController {
     }
 
     @PostMapping("/update")
-    @ResponseBody
-    public StatusResponse commentUpdate(@RequestBody ScoreUpdateRequest scoreUpdateRequest) {
+    public StatusResponse scoreUpdate(@RequestBody Score score) {
         StatusResponse statusResponse = new StatusResponse();
-        Boolean result = scoreService.scoreUpdate(scoreUpdateRequest);
-        statusResponse.setData(result);
+        boolean result = scoreService.scoreUpdate(score);
         if (result) {
+            statusResponse.setData(result);
             statusResponse.setMsgAndCode(StatusResponseCode.SUCCESS);
         } else {
-            statusResponse.setMsgAndCode(StatusResponseCode.ERROR);
-        }
-        return statusResponse;
-    }
-
-    @PostMapping("/select")
-    @ResponseBody
-    public StatusResponse commentSelect(@RequestBody ScoreQueryRequest scoreQueryRequest) {
-        StatusResponse statusResponse = new StatusResponse();
-        List<Score> scoreList = scoreService.scoreSelect(scoreQueryRequest);
-        if (scoreList != null) {
-            statusResponse.setData(scoreList);
-            statusResponse.setMsgAndCode(StatusResponseCode.SUCCESS);
-        } else {
-            statusResponse.setData(null);
             statusResponse.setMsgAndCode(StatusResponseCode.ERROR);
         }
         return statusResponse;
     }
 
     @PostMapping("/delete")
-    @ResponseBody
-    public StatusResponse commentDelete(@RequestBody DeleteRequest deleteRequest) {
+    public StatusResponse scoreDelete(@RequestBody Score score) {
         StatusResponse statusResponse = new StatusResponse();
-        Boolean result = scoreService.scoreDelete(deleteRequest);
-        statusResponse.setData(result);
+        boolean result = scoreService.scoreDelete(score);
         if (result) {
+            statusResponse.setData(result);
             statusResponse.setMsgAndCode(StatusResponseCode.SUCCESS);
         } else {
             statusResponse.setMsgAndCode(StatusResponseCode.ERROR);

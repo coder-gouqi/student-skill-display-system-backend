@@ -13,16 +13,6 @@ import java.util.List;
  */
 @Mapper
 public interface CourseMapper extends MPJBaseMapper<Course> {
-    int insert(Course course);
-
-    List<Course> select(CourseQueryRequest courseQueryRequest);
-
-    Course selectById(String id);
-
-    int deleteById(DeleteRequest deleteRequest);
-
-    int updateById(Course course);
-
 }
 
 

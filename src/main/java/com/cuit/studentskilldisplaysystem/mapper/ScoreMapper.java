@@ -13,15 +13,7 @@ import java.util.List;
  */
 @Mapper
 public interface ScoreMapper extends MPJBaseMapper<Score> {
-    int insert(Score score);
 
-    List<Score> select(ScoreQueryRequest scoreQueryRequest);
-
-    Score selectById(String id);
-
-    int deleteById(DeleteRequest deleteRequest);
-
-    int updateById(Score score);
 
 }
 

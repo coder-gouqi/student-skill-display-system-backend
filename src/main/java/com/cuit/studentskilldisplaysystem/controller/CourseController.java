@@ -1,13 +1,15 @@
 package com.cuit.studentskilldisplaysystem.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cuit.studentskilldisplaysystem.common.DeleteRequest;
 import com.cuit.studentskilldisplaysystem.common.StatusResponse;
 import com.cuit.studentskilldisplaysystem.common.StatusResponseCode;
 import com.cuit.studentskilldisplaysystem.model.domain.Course;
-import com.cuit.studentskilldisplaysystem.model.dto.course.CourseAddRequest;
+import com.cuit.studentskilldisplaysystem.model.domain.SkillIndex;
 import com.cuit.studentskilldisplaysystem.model.dto.course.CourseQueryRequest;
-import com.cuit.studentskilldisplaysystem.model.dto.course.CourseUpdateRequest;
+import com.cuit.studentskilldisplaysystem.model.dto.skillIndex.SkillIndexQueryRequest;
 import com.cuit.studentskilldisplaysystem.service.CourseService;
+import com.cuit.studentskilldisplaysystem.service.SkillIndexService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,12 +26,26 @@ public class CourseController {
     private CourseService courseService;
 
     @PostMapping("/add")
-    @ResponseBody
-    public StatusResponse essayAdd(@RequestBody CourseAddRequest courseAddRequest) {
+    public StatusResponse courseAdd(@RequestBody Course course) {
         StatusResponse statusResponse = new StatusResponse();
-        Boolean result = courseService.courseAdd(courseAddRequest);
-        statusResponse.setData(result);
+        boolean result = courseService.courseAdd(course);
         if (result) {
+            statusResponse.setData(result);
+            statusResponse.setMsgAndCode(StatusResponseCode.SUCCESS);
+        } else {
+            statusResponse.setMsgAndCode(StatusResponseCode.ERROR);
+        }
+        return statusResponse;
+    }
+
+    @PostMapping("/list/page")
+    public StatusResponse courseSelectByPage(@RequestBody CourseQueryRequest courseQueryRequest) {
+        StatusResponse statusResponse = new StatusResponse();
+        long current = courseQueryRequest.getCurrent();
+        long pageSize = courseQueryRequest.getPageSize();
+        Page<Course> courseList = courseService.page(new Page<>(current, pageSize), courseService.getQueryWrapper(courseQueryRequest));
+        if (courseList != null) {
+            statusResponse.setData(courseList);
             statusResponse.setMsgAndCode(StatusResponseCode.SUCCESS);
         } else {
             statusResponse.setMsgAndCode(StatusResponseCode.ERROR);
@@ -38,45 +54,29 @@ public class CourseController {
     }
 
     @PostMapping("/update")
-    @ResponseBody
-    public StatusResponse essayUpdate(@RequestBody CourseUpdateRequest courseUpdateRequest) {
+    public StatusResponse courseUpdate(@RequestBody Course course) {
         StatusResponse statusResponse = new StatusResponse();
-        Boolean result = courseService.courseUpdate(courseUpdateRequest);
-        statusResponse.setData(result);
+        boolean result = courseService.courseUpdate(course);
         if (result) {
+            statusResponse.setData(result);
             statusResponse.setMsgAndCode(StatusResponseCode.SUCCESS);
         } else {
-            statusResponse.setMsgAndCode(StatusResponseCode.ERROR);
-        }
-        return statusResponse;
-    }
-
-    @PostMapping("/select")
-    @ResponseBody
-    public StatusResponse essaySelect(@RequestBody CourseQueryRequest courseQueryRequest) {
-        StatusResponse statusResponse = new StatusResponse();
-        List<Course> essayList = courseService.courseSelect(courseQueryRequest);
-        if (essayList != null) {
-            statusResponse.setData(essayList);
-            statusResponse.setMsgAndCode(StatusResponseCode.SUCCESS);
-        } else {
-            statusResponse.setData(null);
             statusResponse.setMsgAndCode(StatusResponseCode.ERROR);
         }
         return statusResponse;
     }
 
     @PostMapping("/delete")
-    @ResponseBody
-    public StatusResponse essayDelete(@RequestBody DeleteRequest deleteRequest) {
+    public StatusResponse courseDelete(@RequestBody Course course) {
         StatusResponse statusResponse = new StatusResponse();
-        Boolean result = courseService.courseDelete(deleteRequest);
-        statusResponse.setData(result);
+        boolean result = courseService.courseDelete(course);
         if (result) {
+            statusResponse.setData(result);
             statusResponse.setMsgAndCode(StatusResponseCode.SUCCESS);
         } else {
             statusResponse.setMsgAndCode(StatusResponseCode.ERROR);
         }
         return statusResponse;
     }
+
 }

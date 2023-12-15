@@ -2,21 +2,25 @@ package com.cuit.studentskilldisplaysystem.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cuit.studentskilldisplaysystem.common.DeleteRequest;
+import com.cuit.studentskilldisplaysystem.common.StatusResponseCode;
+import com.cuit.studentskilldisplaysystem.contant.CommonConstant;
+import com.cuit.studentskilldisplaysystem.exception.BusinessException;
 import com.cuit.studentskilldisplaysystem.mapper.CourseMapper;
 import com.cuit.studentskilldisplaysystem.mapper.ScoreMapper;
 import com.cuit.studentskilldisplaysystem.mapper.UserMapper;
 import com.cuit.studentskilldisplaysystem.model.domain.Course;
 import com.cuit.studentskilldisplaysystem.model.domain.Score;
 import com.cuit.studentskilldisplaysystem.model.domain.User;
-import com.cuit.studentskilldisplaysystem.model.dto.score.ScoreAddRequest;
+import com.cuit.studentskilldisplaysystem.model.dto.course.CourseQueryRequest;
 import com.cuit.studentskilldisplaysystem.model.dto.score.ScoreQueryRequest;
-import com.cuit.studentskilldisplaysystem.model.dto.score.ScoreUpdateRequest;
 import com.cuit.studentskilldisplaysystem.model.excel.ScoreForExcel;
 import com.cuit.studentskilldisplaysystem.service.ScoreService;
+import com.cuit.studentskilldisplaysystem.utils.SqlUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,9 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -147,40 +149,40 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
     }
 
     @Override
-    public Boolean scoreAdd(ScoreAddRequest scoreAddRequest) {
-        Score score = new Score();
-        BeanUtil.copyProperties(scoreAddRequest,score);
-        String id = UUID.randomUUID().toString().replace("-", "");
+    public Boolean scoreAdd(Score score) {
+        String id = java.util.UUID.randomUUID().toString().replace("-", "");
         score.setId(id);
         score.setIsDelete(0);
-        int insert = scoreMapper.insert(score);
-        return insert > 0;
+        int result = scoreMapper.insert(score);
+        return result > 0;
     }
 
     @Override
-    public Boolean scoreUpdate(ScoreUpdateRequest scoreUpdateRequest) {
-        Score score = scoreMapper.selectById(scoreUpdateRequest.getId());
-        BeanUtil.copyProperties(scoreUpdateRequest, score);
+    public QueryWrapper<Score> getQueryWrapper(ScoreQueryRequest scoreQueryRequest) {
+        if (scoreQueryRequest == null) {
+            throw new BusinessException(StatusResponseCode.PARAMS_ERROR, "请求参数为空");
+        }
+        String sid = scoreQueryRequest.getId();
+        String sortField = scoreQueryRequest.getSortField();
+        String sortOrder = scoreQueryRequest.getSortOrder();
+
+        QueryWrapper<Score> scoreQueryWrapper = new QueryWrapper<>();
+        scoreQueryWrapper.like(StrUtil.isNotBlank(sid),"student_id",sid);
+        scoreQueryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
+        return scoreQueryWrapper;
+
+    }
+
+    @Override
+    public Boolean scoreUpdate(Score score) {
         int result = scoreMapper.updateById(score);
         return result > 0;
     }
 
     @Override
-    public List<Score> scoreSelect(ScoreQueryRequest scoreQueryRequest) {
-        List<Score> scoreList = scoreMapper.select(scoreQueryRequest);
-        return scoreList;
-    }
-
-    @Override
-    public Boolean scoreDelete(DeleteRequest deleteRequest) {
-        int delete = scoreMapper.deleteById(deleteRequest);
-        return delete > 0;
-    }
-
-    @Override
-    public Score selectById(String id) {
-        Score score = scoreMapper.selectById(id);
-        return score;
+    public Boolean scoreDelete(Score score) {
+        int result = scoreMapper.deleteById(score);
+        return result > 0;
     }
 }
 

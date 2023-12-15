@@ -1,13 +1,16 @@
 package com.cuit.studentskilldisplaysystem.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cuit.studentskilldisplaysystem.common.DeleteRequest;
 import com.cuit.studentskilldisplaysystem.model.domain.Course;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.cuit.studentskilldisplaysystem.model.domain.Score;
-import com.cuit.studentskilldisplaysystem.model.dto.course.CourseAddRequest;
-import com.cuit.studentskilldisplaysystem.model.dto.course.CourseQueryRequest;
-import com.cuit.studentskilldisplaysystem.model.dto.course.CourseUpdateRequest;
 import com.cuit.studentskilldisplaysystem.model.domain.SkillIndex;
+import com.cuit.studentskilldisplaysystem.model.dto.course.CourseQueryRequest;
+import com.cuit.studentskilldisplaysystem.model.dto.skillIndex.SkillIndexQueryRequest;
+import com.cuit.studentskilldisplaysystem.model.vo.CourseVo;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -41,27 +44,30 @@ public interface CourseService extends IService<Course> {
     List<Course> selectAll();
 
     /**
-     *添加课程
-     *
+     * 增加课程
+     * @param course
      * @return
      */
-    Boolean courseAdd(CourseAddRequest courseAddRequest);
+    Boolean courseAdd(Course course);
 
     /**
-     * 修改课程
-     *
+     * 更新课程
+     * @param course
      * @return
      */
-    Boolean courseUpdate(CourseUpdateRequest courseUpdateRequest);
+    Boolean courseUpdate(Course course);
 
-    /**
-     * 查看课程
-     */
-    List<Course> courseSelect(CourseQueryRequest courseQueryRequest);
-
-    Course courseSelectById(String id);
     /**
      * 删除课程
+     * @param course
+     * @return
      */
-    Boolean courseDelete(DeleteRequest deleteRequest);
+    Boolean courseDelete(Course course);
+
+    /**
+     * 获取查询条件
+     * @param courseQueryRequest
+     * @return
+     */
+    QueryWrapper<Course> getQueryWrapper(CourseQueryRequest courseQueryRequest);
 }

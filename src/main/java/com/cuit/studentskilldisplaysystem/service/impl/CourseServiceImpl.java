@@ -2,20 +2,23 @@ package com.cuit.studentskilldisplaysystem.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.support.ExcelTypeEnum;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cuit.studentskilldisplaysystem.common.DeleteRequest;
+import com.cuit.studentskilldisplaysystem.common.StatusResponseCode;
+import com.cuit.studentskilldisplaysystem.contant.CommonConstant;
+import com.cuit.studentskilldisplaysystem.exception.BusinessException;
 import com.cuit.studentskilldisplaysystem.mapper.CourseMapper;
 import com.cuit.studentskilldisplaysystem.mapper.SkillIndexMapper;
 import com.cuit.studentskilldisplaysystem.model.domain.Course;
 import com.cuit.studentskilldisplaysystem.model.domain.SkillIndex;
-import com.cuit.studentskilldisplaysystem.model.dto.course.CourseAddRequest;
 import com.cuit.studentskilldisplaysystem.model.dto.course.CourseQueryRequest;
-import com.cuit.studentskilldisplaysystem.model.dto.course.CourseUpdateRequest;
+import com.cuit.studentskilldisplaysystem.model.dto.skillIndex.SkillIndexQueryRequest;
 import com.cuit.studentskilldisplaysystem.model.excel.CourseForExcel;
 import com.cuit.studentskilldisplaysystem.service.CourseService;
+import com.cuit.studentskilldisplaysystem.utils.SqlUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,8 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -130,43 +131,42 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course>
     }
 
     @Override
-    public Boolean courseAdd(CourseAddRequest courseAddRequest) {
-        Course course = new Course();
-        BeanUtil.copyProperties(courseAddRequest, course);
-        String id = UUID.randomUUID().toString().replace("-", "");
+    public Boolean courseAdd(Course course) {
+        String id = java.util.UUID.randomUUID().toString().replace("-", "");
         course.setId(id);
         course.setIsDelete(0);
-        int insert = courseMapper.insert(course);
-        return insert > 0;
+        int result = courseMapper.insert(course);
+        return result > 0;
     }
 
     @Override
-    public Boolean courseUpdate(CourseUpdateRequest courseUpdateRequest) {
-        Course course = courseMapper.selectById(courseUpdateRequest.getId());
-        course.setCourseName(courseUpdateRequest.getCourseName());
-        course.setCourseSkillIndexId(courseUpdateRequest.getCourseSkillIndexId());
-        course.setCourseWeight(courseUpdateRequest.getCourseWeight());
+    public QueryWrapper<Course> getQueryWrapper(CourseQueryRequest courseQueryRequest) {
+        if (courseQueryRequest == null) {
+            throw new BusinessException(StatusResponseCode.PARAMS_ERROR, "请求参数为空");
+        }
+        String courseName = courseQueryRequest.getCourseName();
+        String sortField = courseQueryRequest.getSortField();
+        String sortOrder = courseQueryRequest.getSortOrder();
+
+        QueryWrapper<Course> courseQueryWrapper = new QueryWrapper<>();
+        courseQueryWrapper.like(StrUtil.isNotBlank(courseName),"course_name",courseName);
+        courseQueryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
+        return courseQueryWrapper;
+
+    }
+
+    @Override
+    public Boolean courseUpdate(Course course) {
         int result = courseMapper.updateById(course);
         return result > 0;
     }
 
     @Override
-    public List<Course> courseSelect(CourseQueryRequest courseQueryRequest) {
-        List<Course> essayList = courseMapper.select(courseQueryRequest);
-        return essayList;
+    public Boolean courseDelete(Course course) {
+        int result = courseMapper.deleteById(course);
+        return result > 0;
     }
 
-    @Override
-    public Course courseSelectById(String id) {
-        Course course = courseMapper.selectById(id);
-        return course;
-    }
-
-    @Override
-    public Boolean courseDelete(DeleteRequest deleteRequest) {
-        int delete = courseMapper.deleteById(deleteRequest);
-        return delete > 0;
-    }
 }
 
 

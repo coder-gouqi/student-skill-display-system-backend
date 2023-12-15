@@ -1,12 +1,16 @@
 package com.cuit.studentskilldisplaysystem.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cuit.studentskilldisplaysystem.common.DeleteRequest;
+import com.cuit.studentskilldisplaysystem.model.domain.Course;
 import com.cuit.studentskilldisplaysystem.model.domain.Score;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.cuit.studentskilldisplaysystem.model.dto.score.ScoreAddRequest;
+import com.cuit.studentskilldisplaysystem.model.dto.course.CourseQueryRequest;
 import com.cuit.studentskilldisplaysystem.model.dto.score.ScoreQueryRequest;
-import com.cuit.studentskilldisplaysystem.model.dto.score.ScoreUpdateRequest;
-import com.cuit.studentskilldisplaysystem.model.domain.Score;
+import com.cuit.studentskilldisplaysystem.model.vo.ScoreVo;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -16,12 +20,6 @@ import java.util.List;
  * @description 针对表【score】的数据库操作Service
  */
 public interface ScoreService extends IService<Score> {
-    /**
-     * 查询所有学生成绩的数据
-     *
-     * @return
-     */
-    List<Score> selectAll();
 
     /**
      * 导入数据
@@ -39,34 +37,37 @@ public interface ScoreService extends IService<Score> {
     Boolean exportData(HttpServletResponse response);
 
     /**
-     * 添加成绩
+     * 查询所有成绩的数据
      *
      * @return
      */
-    Boolean scoreAdd(ScoreAddRequest scoreAddRequest);
+    List<Score> selectAll();
 
     /**
-     * 修改成绩
-     *
+     * 增加成绩
+     * @param score
      * @return
      */
-    Boolean scoreUpdate(ScoreUpdateRequest scoreUpdateRequest);
+    Boolean scoreAdd(Score score);
 
     /**
-     * 查看成绩
+     * 更新成绩
+     * @param score
+     * @return
      */
-    List<Score> scoreSelect(ScoreQueryRequest scoreQueryRequest);
+    Boolean scoreUpdate(Score score);
 
     /**
      * 删除成绩
-     */
-    Boolean scoreDelete(DeleteRequest deleteRequest);
-
-    /**
-     * 通过id查询成绩
-     *
-     * @param id
+     * @param score
      * @return
      */
-    Score selectById(String id);
+    Boolean scoreDelete(Score score);
+
+    /**
+     * 获取查询条件
+     * @param scoreQueryRequest
+     * @return
+     */
+    QueryWrapper<Score> getQueryWrapper(ScoreQueryRequest scoreQueryRequest);
 }
