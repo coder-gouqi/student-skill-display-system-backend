@@ -1,9 +1,13 @@
 package com.cuit.studentskilldisplaysystem.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cuit.studentskilldisplaysystem.model.domain.User;
-import com.cuit.studentskilldisplaysystem.model.dto.UserLoginRequest;
+import com.cuit.studentskilldisplaysystem.model.dto.user.UserLoginRequest;
+import com.cuit.studentskilldisplaysystem.model.dto.user.UserQueryRequest;
 import com.cuit.studentskilldisplaysystem.model.vo.UserVo;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,4 +55,22 @@ public interface UserService extends IService<User> {
      * @return
      */
     Boolean exportData(HttpServletResponse response);
+
+    /**
+     * 查询用户（学生）信息（联表查询并分页）
+     *
+     * @param userVoPage
+     * @param userVoClass
+     * @param userMPJLambdaWrapper
+     * @return
+     */
+    IPage<UserVo> selectUserJoinPage(Page<UserVo> userVoPage, Class<UserVo> userVoClass, MPJLambdaWrapper<User> userMPJLambdaWrapper);
+
+    /**
+     * 获取查询条件
+     *
+     * @param userQueryRequest
+     * @return
+     */
+    MPJLambdaWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
 }

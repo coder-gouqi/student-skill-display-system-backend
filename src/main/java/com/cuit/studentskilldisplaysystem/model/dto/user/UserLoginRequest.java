@@ -1,4 +1,4 @@
-package com.cuit.studentskilldisplaysystem.model.dto;
+package com.cuit.studentskilldisplaysystem.model.dto.user;
 
 import lombok.Data;
 

@@ -3,18 +3,26 @@ package com.cuit.studentskilldisplaysystem.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cuit.studentskilldisplaysystem.common.StatusResponseCode;
+import com.cuit.studentskilldisplaysystem.contant.CommonConstant;
 import com.cuit.studentskilldisplaysystem.exception.BusinessException;
 import com.cuit.studentskilldisplaysystem.mapper.AcademyMapper;
 import com.cuit.studentskilldisplaysystem.mapper.UserMapper;
 import com.cuit.studentskilldisplaysystem.model.domain.Academy;
 import com.cuit.studentskilldisplaysystem.model.domain.User;
-import com.cuit.studentskilldisplaysystem.model.dto.UserLoginRequest;
+import com.cuit.studentskilldisplaysystem.model.dto.user.UserLoginRequest;
+import com.cuit.studentskilldisplaysystem.model.dto.user.UserQueryRequest;
 import com.cuit.studentskilldisplaysystem.model.excel.UserForExcel;
 import com.cuit.studentskilldisplaysystem.model.vo.UserVo;
 import com.cuit.studentskilldisplaysystem.service.UserService;
+import com.cuit.studentskilldisplaysystem.utils.SqlUtils;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,6 +51,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Resource
     private AcademyMapper academyMapper;
 
+    /**
+     * 用户登录
+     *
+     * @param userLoginRequest
+     * @param request
+     * @return
+     */
     @Override
     public UserVo userLogin(UserLoginRequest userLoginRequest, HttpServletRequest request) {
         String userAccount = userLoginRequest.getUserAccount();
@@ -58,6 +73,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return null;
     }
 
+    /**
+     * 用户信息脱敏
+     *
+     * @param user
+     * @return
+     */
     private UserVo getSafeUser(User user) {
         UserVo safeUser = new UserVo();
         //使用hutool工具类拷贝用户对象的属性给Vo类对象，进行脱敏
@@ -89,12 +110,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return this.getSafeUser(currentUser);
     }
 
+    /**
+     * 用户注销
+     *
+     * @param request
+     * @return
+     */
     @Override
     public Boolean userLogout(HttpServletRequest request) {
         request.getSession().removeAttribute(USER_LOGIN_STATE);
         return true;
     }
 
+    /**
+     * 导入学生信息
+     *
+     * @param file
+     * @return
+     */
     @Override
     public Boolean importData(MultipartFile file) {
         try {
@@ -137,6 +170,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return true;
     }
 
+    /**
+     * 导出学生信息
+     *
+     * @param response
+     * @return
+     */
     @Override
     public Boolean exportData(HttpServletResponse response) {
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
@@ -150,8 +189,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             String filename = null;
             filename = URLEncoder.encode("user", "utf-8");
             // 文件下载方式(附件下载还是在当前浏览器打开)
-            response.setHeader("Content-disposition", "attachment;filename=" +
-                    filename + ".xlsx");
+            response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xlsx");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -170,14 +208,56 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 userForExcel.setStudentGrade(user.getStudentGrade());
                 userForExcelList.add(userForExcel);
             }
-            EasyExcel.write(response.getOutputStream(), UserForExcel.class)
-                    .sheet("user")
-                    .doWrite(userForExcelList);
+            EasyExcel.write(response.getOutputStream(), UserForExcel.class).sheet("user").doWrite(userForExcelList);
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
         return true;
+    }
+
+    /**
+     * 查询用户（学生）信息（联表查询并分页）
+     *
+     * @param userVoPage
+     * @param userVoClass
+     * @param userMPJLambdaWrapper
+     * @return
+     */
+    @Override
+    public IPage<UserVo> selectUserJoinPage(Page<UserVo> userVoPage, Class<UserVo> userVoClass, MPJLambdaWrapper<User> userMPJLambdaWrapper) {
+        IPage<UserVo> userVoIPage = userMapper.selectJoinPage(userVoPage, userVoClass, userMPJLambdaWrapper);
+        return userVoIPage;
+    }
+
+    /**
+     * 获取查询条件
+     *
+     * @param userQueryRequest
+     * @return
+     */
+    @Override
+    public MPJLambdaWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest) {
+        if (userQueryRequest == null) {
+            throw new BusinessException(StatusResponseCode.PARAMS_ERROR, "请求参数为空");
+        }
+
+        String userName = userQueryRequest.getUserName();
+        Integer studentNumber = userQueryRequest.getStudentNumber();
+        String studentAcademyId = userQueryRequest.getStudentAcademyId();
+        String sortField = userQueryRequest.getSortField();
+        String sortOrder = userQueryRequest.getSortOrder();
+
+        MPJLambdaWrapper<User> userQueryWrapper = new MPJLambdaWrapper<>();
+        userQueryWrapper.selectAll(User.class);
+        userQueryWrapper.selectAs(Academy::getAcademyName, UserVo::getStudentAcademy);
+        userQueryWrapper.leftJoin(Academy.class, Academy::getId, User::getStudentAcademyId);
+        userQueryWrapper.like(StrUtil.isNotBlank(userName), User::getUserName, userName);
+        userQueryWrapper.eq(User::getUserRole, ROLE_STUDENT);
+        userQueryWrapper.eq(studentNumber != null, User::getStudentNumber, studentNumber);
+        userQueryWrapper.eq(StrUtil.isNotBlank(studentAcademyId), User::getStudentAcademyId, studentAcademyId);
+        userQueryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC), User::getUserName);
+        return userQueryWrapper;
     }
 }
 
