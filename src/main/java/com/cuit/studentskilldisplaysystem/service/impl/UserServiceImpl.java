@@ -13,8 +13,10 @@ import com.cuit.studentskilldisplaysystem.common.StatusResponseCode;
 import com.cuit.studentskilldisplaysystem.contant.CommonConstant;
 import com.cuit.studentskilldisplaysystem.exception.BusinessException;
 import com.cuit.studentskilldisplaysystem.mapper.AcademyMapper;
+import com.cuit.studentskilldisplaysystem.mapper.SkillMapper;
 import com.cuit.studentskilldisplaysystem.mapper.UserMapper;
 import com.cuit.studentskilldisplaysystem.model.domain.Academy;
+import com.cuit.studentskilldisplaysystem.model.domain.Skill;
 import com.cuit.studentskilldisplaysystem.model.domain.User;
 import com.cuit.studentskilldisplaysystem.model.dto.user.UserLoginRequest;
 import com.cuit.studentskilldisplaysystem.model.dto.user.UserQueryRequest;
@@ -50,6 +52,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     private AcademyMapper academyMapper;
+
+    @Resource
+    private SkillMapper skillMapper;
 
     /**
      * 用户登录
@@ -258,6 +263,40 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         userQueryWrapper.eq(StrUtil.isNotBlank(studentAcademyId), User::getStudentAcademyId, studentAcademyId);
         userQueryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC), User::getUserName);
         return userQueryWrapper;
+    }
+
+    @Override
+    public List<User> selectAll() {
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        List<User> userList = userMapper.selectList(userQueryWrapper);
+        return userList;
+    }
+
+    @Override
+    public Boolean userAdd(User user) {
+        String studentId = java.util.UUID.randomUUID().toString().replace("-", "");
+        user.setId(studentId);
+        user.setIsDelete(0);
+        Skill skill = new Skill();
+        String skillId = java.util.UUID.randomUUID().toString().replace("-", "");
+        skill.setId(skillId);
+        skill.setStudentId(studentId);
+        skill.setIsDelete(0);
+        int skillResult = skillMapper.insert(skill);
+        int userResult = userMapper.insert(user);
+        return userResult > 0 && skillResult > 0;
+    }
+
+    @Override
+    public Boolean userUpdate(User user) {
+        int result = userMapper.updateById(user);
+        return result > 0;
+    }
+
+    @Override
+    public Boolean userDelete(User user) {
+        int result = userMapper.deleteById(user);
+        return result > 0;
     }
 }
 

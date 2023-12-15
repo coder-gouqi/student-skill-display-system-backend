@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * @description 针对表【user】的数据库操作Service
@@ -73,4 +74,31 @@ public interface UserService extends IService<User> {
      * @return
      */
     MPJLambdaWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
+
+    /**
+     * 查询所有学生信息
+     */
+    List<User> selectAll();
+
+    /**
+     * 添加用户
+     * @param user
+     * @return
+     */
+    Boolean userAdd(User user);
+
+    /**
+     * 更新用户
+     * @param user
+     * @return
+     */
+    Boolean userUpdate(User user);
+
+    /**
+     * 删除用户
+     * @param user
+     * @return
+     */
+    Boolean userDelete(User user);
+
 }
