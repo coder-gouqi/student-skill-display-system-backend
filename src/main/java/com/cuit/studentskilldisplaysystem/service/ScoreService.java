@@ -9,6 +9,7 @@ import com.cuit.studentskilldisplaysystem.model.domain.Score;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cuit.studentskilldisplaysystem.model.dto.course.CourseQueryRequest;
 import com.cuit.studentskilldisplaysystem.model.dto.score.ScoreQueryRequest;
+import com.cuit.studentskilldisplaysystem.model.vo.CourseVo;
 import com.cuit.studentskilldisplaysystem.model.vo.ScoreVo;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.springframework.web.multipart.MultipartFile;
@@ -65,9 +66,20 @@ public interface ScoreService extends IService<Score> {
     Boolean scoreDelete(Score score);
 
     /**
+     * 查询课程信息（联表查询并分页）
+     *
+     * @param scoreVoPage
+     * @param scoreVoClass
+     * @param scoreMPJLambdaWrapper
+     * @return
+     */
+    IPage<ScoreVo> selectScoreJoinPage(Page<ScoreVo> scoreVoPage, Class<ScoreVo> scoreVoClass, MPJLambdaWrapper<Score> scoreMPJLambdaWrapper);
+
+    /**
      * 获取查询条件
+     *
      * @param scoreQueryRequest
      * @return
      */
-    QueryWrapper<Score> getQueryWrapper(ScoreQueryRequest scoreQueryRequest);
+    MPJLambdaWrapper<Score> getQueryWrapper(ScoreQueryRequest scoreQueryRequest);
 }

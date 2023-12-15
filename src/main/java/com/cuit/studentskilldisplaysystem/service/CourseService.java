@@ -7,9 +7,12 @@ import com.cuit.studentskilldisplaysystem.common.DeleteRequest;
 import com.cuit.studentskilldisplaysystem.model.domain.Course;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cuit.studentskilldisplaysystem.model.domain.SkillIndex;
+import com.cuit.studentskilldisplaysystem.model.domain.User;
 import com.cuit.studentskilldisplaysystem.model.dto.course.CourseQueryRequest;
 import com.cuit.studentskilldisplaysystem.model.dto.skillIndex.SkillIndexQueryRequest;
+import com.cuit.studentskilldisplaysystem.model.dto.user.UserQueryRequest;
 import com.cuit.studentskilldisplaysystem.model.vo.CourseVo;
+import com.cuit.studentskilldisplaysystem.model.vo.UserVo;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -65,9 +68,20 @@ public interface CourseService extends IService<Course> {
     Boolean courseDelete(Course course);
 
     /**
+     * 查询课程信息（联表查询并分页）
+     *
+     * @param courseVoPage
+     * @param courseVoClass
+     * @param courseMPJLambdaWrapper
+     * @return
+     */
+    IPage<CourseVo> selectCourseJoinPage(Page<CourseVo> courseVoPage, Class<CourseVo> courseVoClass, MPJLambdaWrapper<Course> courseMPJLambdaWrapper);
+
+    /**
      * 获取查询条件
+     *
      * @param courseQueryRequest
      * @return
      */
-    QueryWrapper<Course> getQueryWrapper(CourseQueryRequest courseQueryRequest);
+    MPJLambdaWrapper<Course> getQueryWrapper(CourseQueryRequest courseQueryRequest);
 }

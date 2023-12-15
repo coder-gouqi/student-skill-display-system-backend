@@ -5,6 +5,8 @@ import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cuit.studentskilldisplaysystem.common.DeleteRequest;
 import com.cuit.studentskilldisplaysystem.common.StatusResponseCode;
@@ -12,13 +14,19 @@ import com.cuit.studentskilldisplaysystem.contant.CommonConstant;
 import com.cuit.studentskilldisplaysystem.exception.BusinessException;
 import com.cuit.studentskilldisplaysystem.mapper.CourseMapper;
 import com.cuit.studentskilldisplaysystem.mapper.SkillIndexMapper;
+import com.cuit.studentskilldisplaysystem.model.domain.Academy;
 import com.cuit.studentskilldisplaysystem.model.domain.Course;
 import com.cuit.studentskilldisplaysystem.model.domain.SkillIndex;
+import com.cuit.studentskilldisplaysystem.model.domain.User;
 import com.cuit.studentskilldisplaysystem.model.dto.course.CourseQueryRequest;
 import com.cuit.studentskilldisplaysystem.model.dto.skillIndex.SkillIndexQueryRequest;
+import com.cuit.studentskilldisplaysystem.model.dto.user.UserQueryRequest;
 import com.cuit.studentskilldisplaysystem.model.excel.CourseForExcel;
+import com.cuit.studentskilldisplaysystem.model.vo.CourseVo;
+import com.cuit.studentskilldisplaysystem.model.vo.UserVo;
 import com.cuit.studentskilldisplaysystem.service.CourseService;
 import com.cuit.studentskilldisplaysystem.utils.SqlUtils;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +37,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.cuit.studentskilldisplaysystem.contant.UserConstant.ROLE_STUDENT;
 
 /**
  * @description 针对表【course】的数据库操作Service实现
@@ -42,13 +52,6 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course>
 
     @Resource
     private CourseMapper courseMapper;
-
-    @Override
-    public List<Course> selectAll() {
-        QueryWrapper<Course> courseQueryWrapper = new QueryWrapper<>();
-        List<Course> courseList = courseMapper.selectList(courseQueryWrapper);
-        return courseList;
-    }
 
     @Override
     public Boolean importData(MultipartFile file) {
@@ -130,6 +133,56 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course>
         return true;
     }
 
+
+    /**
+     * 查询课程信息（联表查询并分页）
+     *
+     * @param courseVoPage
+     * @param courseVoClass
+     * @param courseMPJLambdaWrapper
+     * @return
+     */
+    @Override
+    public IPage<CourseVo> selectCourseJoinPage(Page<CourseVo> courseVoPage, Class<CourseVo> courseVoClass, MPJLambdaWrapper<Course> courseMPJLambdaWrapper){
+        IPage<CourseVo> courseVoIPage = courseMapper.selectJoinPage(courseVoPage, courseVoClass, courseMPJLambdaWrapper);
+        return courseVoIPage;
+    }
+
+    /**
+     * 获取查询条件
+     *
+     * @param courseQueryRequest
+     * @return
+     */
+    @Override
+    public MPJLambdaWrapper<Course> getQueryWrapper(CourseQueryRequest courseQueryRequest) {
+        if (courseQueryRequest == null) {
+            throw new BusinessException(StatusResponseCode.PARAMS_ERROR, "请求参数为空");
+        }
+
+        String courseName = courseQueryRequest.getCourseName();
+        String courseSkillIndexId = courseQueryRequest.getCourseSkillIndexId();
+        String sortField = courseQueryRequest.getSortField();
+        String sortOrder = courseQueryRequest.getSortOrder();
+
+        MPJLambdaWrapper<Course> courseQueryWrapper = new MPJLambdaWrapper<>();
+        courseQueryWrapper.selectAll(Course.class);
+        courseQueryWrapper.selectAs(SkillIndex::getSkillIndexName, CourseVo::getSkillIndexName);
+        courseQueryWrapper.leftJoin(SkillIndex.class, SkillIndex::getId, Course::getCourseSkillIndexId);
+        courseQueryWrapper.like(StrUtil.isNotBlank(courseName), Course::getCourseName, courseName);
+        courseQueryWrapper.eq(courseName != null, Course::getCourseName, courseName);
+        courseQueryWrapper.eq(StrUtil.isNotBlank(courseSkillIndexId), SkillIndex::getId, courseSkillIndexId);
+        courseQueryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC), Course::getCourseName);
+        return courseQueryWrapper;
+    }
+
+    @Override
+    public List<Course> selectAll() {
+        QueryWrapper<Course> courseQueryWrapper = new QueryWrapper<>();
+        List<Course> courseList = courseMapper.selectList(courseQueryWrapper);
+        return courseList;
+    }
+
     @Override
     public Boolean courseAdd(Course course) {
         String id = java.util.UUID.randomUUID().toString().replace("-", "");
@@ -137,22 +190,6 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course>
         course.setIsDelete(0);
         int result = courseMapper.insert(course);
         return result > 0;
-    }
-
-    @Override
-    public QueryWrapper<Course> getQueryWrapper(CourseQueryRequest courseQueryRequest) {
-        if (courseQueryRequest == null) {
-            throw new BusinessException(StatusResponseCode.PARAMS_ERROR, "请求参数为空");
-        }
-        String courseName = courseQueryRequest.getCourseName();
-        String sortField = courseQueryRequest.getSortField();
-        String sortOrder = courseQueryRequest.getSortOrder();
-
-        QueryWrapper<Course> courseQueryWrapper = new QueryWrapper<>();
-        courseQueryWrapper.like(StrUtil.isNotBlank(courseName),"course_name",courseName);
-        courseQueryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
-        return courseQueryWrapper;
-
     }
 
     @Override

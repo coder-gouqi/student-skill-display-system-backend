@@ -298,6 +298,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         int result = userMapper.deleteById(user);
         return result > 0;
     }
+
 }
 
 

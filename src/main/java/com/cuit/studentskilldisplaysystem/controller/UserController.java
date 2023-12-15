@@ -1,8 +1,13 @@
 package com.cuit.studentskilldisplaysystem.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cuit.studentskilldisplaysystem.common.StatusResponse;
 import com.cuit.studentskilldisplaysystem.common.StatusResponseCode;
+import com.cuit.studentskilldisplaysystem.model.domain.Course;
+import com.cuit.studentskilldisplaysystem.model.domain.User;
+import com.cuit.studentskilldisplaysystem.model.dto.course.CourseQueryRequest;
 import com.cuit.studentskilldisplaysystem.model.dto.user.UserLoginRequest;
+import com.cuit.studentskilldisplaysystem.model.dto.user.UserQueryRequest;
 import com.cuit.studentskilldisplaysystem.model.vo.UserVo;
 import com.cuit.studentskilldisplaysystem.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -73,4 +78,58 @@ public class UserController {
         }
         return statusResponse;
     }
+    @PostMapping("/add")
+    public StatusResponse userAdd(@RequestBody User user) {
+        StatusResponse statusResponse = new StatusResponse();
+        boolean result = userService.userAdd(user);
+        if (result) {
+            statusResponse.setData(result);
+            statusResponse.setMsgAndCode(StatusResponseCode.SUCCESS);
+        } else {
+            statusResponse.setMsgAndCode(StatusResponseCode.ERROR);
+        }
+        return statusResponse;
+    }
+
+    @PostMapping("/list/page")
+    public StatusResponse userSelectByPage(@RequestBody UserQueryRequest userQueryRequest) {
+        StatusResponse statusResponse = new StatusResponse();
+        long current = userQueryRequest.getCurrent();
+        long pageSize = userQueryRequest.getPageSize();
+        Page<User> userList = userService.page(new Page<>(current, pageSize), userService.getQueryWrapper(userQueryRequest));
+        if (userList != null) {
+            statusResponse.setData(userList);
+            statusResponse.setMsgAndCode(StatusResponseCode.SUCCESS);
+        } else {
+            statusResponse.setMsgAndCode(StatusResponseCode.ERROR);
+        }
+        return statusResponse;
+    }
+
+    @PostMapping("/update")
+    public StatusResponse userUpdate(@RequestBody User user) {
+        StatusResponse statusResponse = new StatusResponse();
+        boolean result = userService.userUpdate(user);
+        if (result) {
+            statusResponse.setData(result);
+            statusResponse.setMsgAndCode(StatusResponseCode.SUCCESS);
+        } else {
+            statusResponse.setMsgAndCode(StatusResponseCode.ERROR);
+        }
+        return statusResponse;
+    }
+
+    @PostMapping("/delete")
+    public StatusResponse userDelete(@RequestBody User user) {
+        StatusResponse statusResponse = new StatusResponse();
+        boolean result = userService.userDelete(user);
+        if (result) {
+            statusResponse.setData(result);
+            statusResponse.setMsgAndCode(StatusResponseCode.SUCCESS);
+        } else {
+            statusResponse.setMsgAndCode(StatusResponseCode.ERROR);
+        }
+        return statusResponse;
+    }
+
 }
