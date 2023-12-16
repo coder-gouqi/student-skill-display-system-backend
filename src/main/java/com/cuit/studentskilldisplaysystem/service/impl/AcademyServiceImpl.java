@@ -14,6 +14,7 @@ import com.cuit.studentskilldisplaysystem.utils.SqlUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -65,6 +66,13 @@ public class AcademyServiceImpl extends ServiceImpl<AcademyMapper, Academy>
     public Boolean academyDelete(Academy academy) {
         int result = academyMapper.deleteById(academy);
         return result > 0;
+    }
+
+    @Override
+    public List<Academy> selectAll() {
+        QueryWrapper<Academy> academyQueryWrapper = new QueryWrapper<>();
+        List<Academy> academyList = academyMapper.selectList(academyQueryWrapper);
+        return academyList;
     }
 }
 

@@ -1,21 +1,15 @@
 package com.cuit.studentskilldisplaysystem.controller;
 
-import com.alibaba.excel.EasyExcel;
 import com.cuit.studentskilldisplaysystem.common.StatusResponse;
 import com.cuit.studentskilldisplaysystem.common.StatusResponseCode;
 import com.cuit.studentskilldisplaysystem.service.CourseService;
 import com.cuit.studentskilldisplaysystem.service.ScoreService;
 import com.cuit.studentskilldisplaysystem.service.UserService;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/excel")

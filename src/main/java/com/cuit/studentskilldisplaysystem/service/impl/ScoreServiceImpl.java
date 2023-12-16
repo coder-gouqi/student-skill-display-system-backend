@@ -1,6 +1,5 @@
 package com.cuit.studentskilldisplaysystem.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcel;
@@ -8,24 +7,18 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cuit.studentskilldisplaysystem.common.DeleteRequest;
 import com.cuit.studentskilldisplaysystem.common.StatusResponseCode;
 import com.cuit.studentskilldisplaysystem.contant.CommonConstant;
 import com.cuit.studentskilldisplaysystem.exception.BusinessException;
 import com.cuit.studentskilldisplaysystem.mapper.CourseMapper;
 import com.cuit.studentskilldisplaysystem.mapper.ScoreMapper;
 import com.cuit.studentskilldisplaysystem.mapper.UserMapper;
-import com.cuit.studentskilldisplaysystem.model.domain.Academy;
 import com.cuit.studentskilldisplaysystem.model.domain.Course;
 import com.cuit.studentskilldisplaysystem.model.domain.Score;
 import com.cuit.studentskilldisplaysystem.model.domain.User;
-import com.cuit.studentskilldisplaysystem.model.dto.course.CourseQueryRequest;
 import com.cuit.studentskilldisplaysystem.model.dto.score.ScoreQueryRequest;
-import com.cuit.studentskilldisplaysystem.model.dto.user.UserQueryRequest;
 import com.cuit.studentskilldisplaysystem.model.excel.ScoreForExcel;
-import com.cuit.studentskilldisplaysystem.model.vo.CourseVo;
 import com.cuit.studentskilldisplaysystem.model.vo.ScoreVo;
-import com.cuit.studentskilldisplaysystem.model.vo.UserVo;
 import com.cuit.studentskilldisplaysystem.service.ScoreService;
 import com.cuit.studentskilldisplaysystem.utils.SqlUtils;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
@@ -39,8 +32,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.cuit.studentskilldisplaysystem.contant.UserConstant.ROLE_STUDENT;
 
 /**
  * @description 针对表【score】的数据库操作Service实现
@@ -167,7 +158,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
      * @return
      */
     @Override
-    public IPage<ScoreVo> selectScoreJoinPage(Page<ScoreVo> scoreVoPage, Class<ScoreVo> scoreVoClass, MPJLambdaWrapper<Score> scoreMPJLambdaWrapper){
+    public IPage<ScoreVo> selectScoreJoinPage(Page<ScoreVo> scoreVoPage, Class<ScoreVo> scoreVoClass, MPJLambdaWrapper<Score> scoreMPJLambdaWrapper) {
         IPage<ScoreVo> scoreVoIPage = scoreMapper.selectJoinPage(scoreVoPage, scoreVoClass, scoreMPJLambdaWrapper);
         return scoreVoIPage;
     }
@@ -184,7 +175,6 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
             throw new BusinessException(StatusResponseCode.PARAMS_ERROR, "请求参数为空");
         }
 
-        Double studentScore = scoreQueryRequest.getStudentScore();
         String studentId = scoreQueryRequest.getStudentId();
         String courseId = scoreQueryRequest.getCourseId();
         String sortField = scoreQueryRequest.getSortField();
@@ -194,12 +184,11 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
         scoreQueryWrapper.selectAll(Score.class);
         scoreQueryWrapper.selectAs(User::getUserName, ScoreVo::getStudentName);
         scoreQueryWrapper.selectAs(Course::getCourseName, ScoreVo::getCourseName);
-        scoreQueryWrapper.leftJoin(User.class, User::getStudentNumber, Score::getStudentId);
-        scoreQueryWrapper.leftJoin(Course.class, Course::getCourseName, Score::getCourseId);
-        scoreQueryWrapper.eq(studentScore != null, Score::getStudentScore, studentScore);
+        scoreQueryWrapper.leftJoin(User.class, User::getId, Score::getStudentId);
+        scoreQueryWrapper.leftJoin(Course.class, Course::getId, Score::getCourseId);
         scoreQueryWrapper.eq(StrUtil.isNotBlank(studentId), Score::getStudentId, studentId);
         scoreQueryWrapper.eq(StrUtil.isNotBlank(courseId), Score::getCourseId, courseId);
-        scoreQueryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC), Score::getStudentScore);
+        scoreQueryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC), Score::getId);
         return scoreQueryWrapper;
     }
 

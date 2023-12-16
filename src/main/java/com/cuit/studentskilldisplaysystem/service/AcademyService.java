@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.cuit.studentskilldisplaysystem.model.domain.Academy;
 import com.cuit.studentskilldisplaysystem.model.dto.academy.AcademyQueryRequest;
 
+import java.util.List;
+
 /**
  * @description 针对表【academy】的数据库操作Service
  */
@@ -17,5 +19,7 @@ public interface AcademyService extends IService<Academy> {
     Boolean academyUpdate(Academy academy);
 
     Boolean academyDelete(Academy academy);
+
+    List<Academy> selectAll();
 
 }

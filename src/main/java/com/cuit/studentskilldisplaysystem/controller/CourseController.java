@@ -1,25 +1,21 @@
 package com.cuit.studentskilldisplaysystem.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.cuit.studentskilldisplaysystem.common.DeleteRequest;
 import com.cuit.studentskilldisplaysystem.common.StatusResponse;
 import com.cuit.studentskilldisplaysystem.common.StatusResponseCode;
 import com.cuit.studentskilldisplaysystem.model.domain.Course;
-import com.cuit.studentskilldisplaysystem.model.domain.SkillIndex;
 import com.cuit.studentskilldisplaysystem.model.dto.course.CourseQueryRequest;
-import com.cuit.studentskilldisplaysystem.model.dto.skillIndex.SkillIndexQueryRequest;
+import com.cuit.studentskilldisplaysystem.model.vo.CourseVo;
 import com.cuit.studentskilldisplaysystem.service.CourseService;
-import com.cuit.studentskilldisplaysystem.service.SkillIndexService;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/course")
 public class CourseController {
     @Resource
@@ -43,7 +39,7 @@ public class CourseController {
         StatusResponse statusResponse = new StatusResponse();
         long current = courseQueryRequest.getCurrent();
         long pageSize = courseQueryRequest.getPageSize();
-        Page<Course> courseList = courseService.page(new Page<>(current, pageSize), courseService.getQueryWrapper(courseQueryRequest));
+        IPage<CourseVo> courseList = courseService.selectCourseJoinPage(new Page<>(current, pageSize), CourseVo.class, courseService.getQueryWrapper(courseQueryRequest));
         if (courseList != null) {
             statusResponse.setData(courseList);
             statusResponse.setMsgAndCode(StatusResponseCode.SUCCESS);
@@ -78,5 +74,4 @@ public class CourseController {
         }
         return statusResponse;
     }
-
 }

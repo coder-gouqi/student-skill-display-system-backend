@@ -3,9 +3,7 @@ package com.cuit.studentskilldisplaysystem.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cuit.studentskilldisplaysystem.common.StatusResponse;
 import com.cuit.studentskilldisplaysystem.common.StatusResponseCode;
-import com.cuit.studentskilldisplaysystem.model.domain.Course;
 import com.cuit.studentskilldisplaysystem.model.domain.User;
-import com.cuit.studentskilldisplaysystem.model.dto.course.CourseQueryRequest;
 import com.cuit.studentskilldisplaysystem.model.dto.user.UserLoginRequest;
 import com.cuit.studentskilldisplaysystem.model.dto.user.UserQueryRequest;
 import com.cuit.studentskilldisplaysystem.model.vo.UserVo;
@@ -78,6 +76,7 @@ public class UserController {
         }
         return statusResponse;
     }
+
     @PostMapping("/add")
     public StatusResponse userAdd(@RequestBody User user) {
         StatusResponse statusResponse = new StatusResponse();

@@ -167,11 +167,10 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course>
 
         MPJLambdaWrapper<Course> courseQueryWrapper = new MPJLambdaWrapper<>();
         courseQueryWrapper.selectAll(Course.class);
-        courseQueryWrapper.selectAs(SkillIndex::getSkillIndexName, CourseVo::getSkillIndexName);
+        courseQueryWrapper.selectAs(SkillIndex::getSkillIndexName, CourseVo::getCourseSkillIndexName);
         courseQueryWrapper.leftJoin(SkillIndex.class, SkillIndex::getId, Course::getCourseSkillIndexId);
         courseQueryWrapper.like(StrUtil.isNotBlank(courseName), Course::getCourseName, courseName);
-        courseQueryWrapper.eq(courseName != null, Course::getCourseName, courseName);
-        courseQueryWrapper.eq(StrUtil.isNotBlank(courseSkillIndexId), SkillIndex::getId, courseSkillIndexId);
+        courseQueryWrapper.eq(StrUtil.isNotBlank(courseSkillIndexId), Course::getCourseSkillIndexId, courseSkillIndexId);
         courseQueryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC), Course::getCourseName);
         return courseQueryWrapper;
     }
