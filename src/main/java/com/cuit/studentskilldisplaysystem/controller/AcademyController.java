@@ -6,12 +6,10 @@ import com.cuit.studentskilldisplaysystem.common.StatusResponseCode;
 import com.cuit.studentskilldisplaysystem.model.domain.Academy;
 import com.cuit.studentskilldisplaysystem.model.dto.academy.AcademyQueryRequest;
 import com.cuit.studentskilldisplaysystem.service.AcademyService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RestController
 @RequestMapping("/academy")
@@ -67,6 +65,18 @@ public class AcademyController {
         boolean result = academyService.academyDelete(academy);
         if (result) {
             statusResponse.setData(result);
+            statusResponse.setMsgAndCode(StatusResponseCode.SUCCESS);
+        } else {
+            statusResponse.setMsgAndCode(StatusResponseCode.ERROR);
+        }
+        return statusResponse;
+    }
+    @GetMapping("/select")
+    public StatusResponse academySelect() {
+        StatusResponse statusResponse = new StatusResponse();
+        List<Academy> academyList = academyService.selectAll();
+        if (academyList != null) {
+            statusResponse.setData(academyList);
             statusResponse.setMsgAndCode(StatusResponseCode.SUCCESS);
         } else {
             statusResponse.setMsgAndCode(StatusResponseCode.ERROR);
