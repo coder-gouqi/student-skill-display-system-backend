@@ -8,12 +8,10 @@ import com.cuit.studentskilldisplaysystem.model.domain.Score;
 import com.cuit.studentskilldisplaysystem.model.dto.score.ScoreQueryRequest;
 import com.cuit.studentskilldisplaysystem.model.vo.ScoreVo;
 import com.cuit.studentskilldisplaysystem.service.ScoreService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RestController
 @RequestMapping("/score")
@@ -69,6 +67,19 @@ public class ScoreController {
         boolean result = scoreService.scoreDelete(score);
         if (result) {
             statusResponse.setData(result);
+            statusResponse.setMsgAndCode(StatusResponseCode.SUCCESS);
+        } else {
+            statusResponse.setMsgAndCode(StatusResponseCode.ERROR);
+        }
+        return statusResponse;
+    }
+
+    @GetMapping("/select")
+    public StatusResponse scoreSelect() {
+        StatusResponse statusResponse = new StatusResponse();
+        List<Score> scoreList = scoreService.selectAll();
+        if (scoreList != null) {
+            statusResponse.setData(scoreList);
             statusResponse.setMsgAndCode(StatusResponseCode.SUCCESS);
         } else {
             statusResponse.setMsgAndCode(StatusResponseCode.ERROR);

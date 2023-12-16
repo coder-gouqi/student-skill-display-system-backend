@@ -70,9 +70,9 @@ public interface CourseService extends IService<Course> {
     /**
      * 查询课程信息（联表查询并分页）
      *
-     * @param courseVoPage
-     * @param courseVoClass
-     * @param courseMPJLambdaWrapper
+     * @param courseVoPage  用于分页的对象，可能是用于存储课程信息的页面。
+     * @param courseVoClass   课程信息的类，可能是用于表示课程的数据结构。
+     * @param courseMPJLambdaWrapper   用于查询的包装器，包含了一些查询条件信息。
      * @return
      */
     IPage<CourseVo> selectCourseJoinPage(Page<CourseVo> courseVoPage, Class<CourseVo> courseVoClass, MPJLambdaWrapper<Course> courseMPJLambdaWrapper);
@@ -84,4 +84,11 @@ public interface CourseService extends IService<Course> {
      * @return
      */
     MPJLambdaWrapper<Course> getQueryWrapper(CourseQueryRequest courseQueryRequest);
+    /*
+    创建一个名为 MPJLambdaWrapper 的类，该类将包含用于构建查询条件的方法。
+    在这个类中，创建一个名为 getQueryWrapper 的方法，该方法接受一个 CourseQueryRequest 对象作为参数。
+    在 getQueryWrapper 方法中，解析 courseQueryRequest 对象中的条件，例如课程名称、课程类型、课程时间等。
+    根据解析出的条件，使用 MPJLambdaWrapper 类中的方法构建相应的查询逻辑，例如 equal、like、between 等。
+    将构建好的查询逻辑封装在一个 MPJLambdaWrapper 对象中，并将其返回。
+    */
 }

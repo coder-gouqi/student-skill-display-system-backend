@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -124,6 +125,19 @@ public class UserController {
         boolean result = userService.userDelete(user);
         if (result) {
             statusResponse.setData(result);
+            statusResponse.setMsgAndCode(StatusResponseCode.SUCCESS);
+        } else {
+            statusResponse.setMsgAndCode(StatusResponseCode.ERROR);
+        }
+        return statusResponse;
+    }
+
+    @GetMapping("/select")
+    public StatusResponse userSelect() {
+        StatusResponse statusResponse = new StatusResponse();
+        List<User> userList = userService.selectAll();
+        if (userList != null) {
+            statusResponse.setData(userList);
             statusResponse.setMsgAndCode(StatusResponseCode.SUCCESS);
         } else {
             statusResponse.setMsgAndCode(StatusResponseCode.ERROR);

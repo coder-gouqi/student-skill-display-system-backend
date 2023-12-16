@@ -253,6 +253,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String sortField = userQueryRequest.getSortField();
         String sortOrder = userQueryRequest.getSortOrder();
 
+        /*首先，创建了一个MPJLambdaWrapper对象，并指定了泛型为User，这意味着希望对User对象进行查询。
+        然后，调用了selectAll方法，这可能是用于指定查询的字段，或者表示查询所有字段。
+        接下来，调用了selectAs方法，该方法似乎用于指定查询结果中的字段映射关系。在这里，将Academy对象的academyName字段映射到UserVo对象的studentAcademy字段。
+        紧接着，调用了leftJoin方法，这表示希望进行左连接操作。传递了Academy.class作为连接的表，Academy::getId作为连接条件的字段，以及User::getStudentAcademyId作为User表的连接字段。
+        然后，调用了like方法，该方法似乎用于添加类似于的查询条件。在这里，您检查了userName是否不为空，如果不为空，则添加了一个以userName字段为条件的模糊查询。
+        接着，调用了eq方法，该方法用于添加相等条件的查询。检查了userRole是否等于ROLE_STUDENT。
+        紧接着，又调用了eq方法，这次是根据studentNumber是否不为空来添加相等条件的查询。
+        接下来，再次调用了eq方法，这次是根据studentAcademyId是否不为空来添加相等条件的查询。
+        最后，调用了orderBy方法，用于指定查询结果的排序方式。传递了sortField作为排序字段，sortOrder.equals(CommonConstant.SORT_ORDER_ASC)作为排序顺序，以及User::getUserName作为排序的字段。
+         */
         MPJLambdaWrapper<User> userQueryWrapper = new MPJLambdaWrapper<>();
         userQueryWrapper.selectAll(User.class);
         userQueryWrapper.selectAs(Academy::getAcademyName, UserVo::getStudentAcademy);
