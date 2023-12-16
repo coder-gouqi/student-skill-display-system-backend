@@ -13,12 +13,12 @@ public class SkillVo {
     /**
      * 技能展示id
      */
-    private Integer id;
+    private String id;
 
     /**
      * 学生姓名
      */
-    private String studentId;
+    private String studentName;
 
     /**
      * 学生技能成绩（json）
