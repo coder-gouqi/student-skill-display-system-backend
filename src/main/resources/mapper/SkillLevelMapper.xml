@@ -6,7 +6,7 @@
 
     <resultMap id="BaseResultMap" type="com.cuit.studentskilldisplaysystem.model.domain.SkillLevel">
             <id property="id" column="id" jdbcType="VARCHAR"/>
-            <result property="skillLevel" column="skill_level" jdbcType="VARCHAR"/>
+            <result property="skillLevel" column="skill_level" jdbcType="INTEGER"/>
             <result property="end" column="end" jdbcType="INTEGER"/>
             <result property="start" column="start" jdbcType="INTEGER"/>
             <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>

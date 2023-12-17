@@ -23,7 +23,7 @@ public class SkillLevel implements Serializable {
      * 技能等级
      */
     @TableField(value = "skill_level")
-    private String skillLevel;
+    private Integer skillLevel;
 
     /**
      * 结束值
