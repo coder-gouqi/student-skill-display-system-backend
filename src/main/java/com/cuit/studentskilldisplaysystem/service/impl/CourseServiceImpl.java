@@ -1,6 +1,5 @@
 package com.cuit.studentskilldisplaysystem.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcel;
@@ -8,22 +7,16 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cuit.studentskilldisplaysystem.common.DeleteRequest;
 import com.cuit.studentskilldisplaysystem.common.StatusResponseCode;
 import com.cuit.studentskilldisplaysystem.contant.CommonConstant;
 import com.cuit.studentskilldisplaysystem.exception.BusinessException;
 import com.cuit.studentskilldisplaysystem.mapper.CourseMapper;
 import com.cuit.studentskilldisplaysystem.mapper.SkillIndexMapper;
-import com.cuit.studentskilldisplaysystem.model.domain.Academy;
 import com.cuit.studentskilldisplaysystem.model.domain.Course;
 import com.cuit.studentskilldisplaysystem.model.domain.SkillIndex;
-import com.cuit.studentskilldisplaysystem.model.domain.User;
 import com.cuit.studentskilldisplaysystem.model.dto.course.CourseQueryRequest;
-import com.cuit.studentskilldisplaysystem.model.dto.skillIndex.SkillIndexQueryRequest;
-import com.cuit.studentskilldisplaysystem.model.dto.user.UserQueryRequest;
 import com.cuit.studentskilldisplaysystem.model.excel.CourseForExcel;
 import com.cuit.studentskilldisplaysystem.model.vo.CourseVo;
-import com.cuit.studentskilldisplaysystem.model.vo.UserVo;
 import com.cuit.studentskilldisplaysystem.service.CourseService;
 import com.cuit.studentskilldisplaysystem.utils.SqlUtils;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
@@ -37,8 +30,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.cuit.studentskilldisplaysystem.contant.UserConstant.ROLE_STUDENT;
 
 /**
  * @description 针对表【course】的数据库操作Service实现
@@ -144,7 +135,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course>
      */
     //从数据库中查询课程信息，并返回一个包含课程信息的分页对象。这个方法使用了MyBatis-Plus框架提供的便利方法来简化数据库查询操作。
     @Override
-    public IPage<CourseVo> selectCourseJoinPage(Page<CourseVo> courseVoPage, Class<CourseVo> courseVoClass, MPJLambdaWrapper<Course> courseMPJLambdaWrapper){
+    public IPage<CourseVo> selectCourseJoinPage(Page<CourseVo> courseVoPage, Class<CourseVo> courseVoClass, MPJLambdaWrapper<Course> courseMPJLambdaWrapper) {
         IPage<CourseVo> courseVoIPage = courseMapper.selectJoinPage(courseVoPage, courseVoClass, courseMPJLambdaWrapper);
         return courseVoIPage;
     }
@@ -168,7 +159,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course>
 
         MPJLambdaWrapper<Course> courseQueryWrapper = new MPJLambdaWrapper<>();
         courseQueryWrapper.selectAll(Course.class);
-        courseQueryWrapper.selectAs(SkillIndex::getSkillIndexName, CourseVo::getSkillIndexName);
+        courseQueryWrapper.selectAs(SkillIndex::getSkillIndexName, CourseVo::getCourseSkillIndexName);
         courseQueryWrapper.leftJoin(SkillIndex.class, SkillIndex::getId, Course::getCourseSkillIndexId);
         courseQueryWrapper.like(StrUtil.isNotBlank(courseName), Course::getCourseName, courseName);
         courseQueryWrapper.eq(StrUtil.isNotBlank(courseSkillIndexId), Course::getCourseSkillIndexId, courseSkillIndexId);

@@ -67,6 +67,7 @@ public class SkillLevelServiceImpl extends ServiceImpl<SkillLevelMapper, SkillLe
     @Override
     public List<SkillLevel> selectAll() {
         QueryWrapper<SkillLevel> skillLevelQueryWrapper = new QueryWrapper<>();
+        skillLevelQueryWrapper.orderByAsc("skill_level");
         List<SkillLevel> skillLevelList = skillLevelMapper.selectList(skillLevelQueryWrapper);
         return skillLevelList;
     }

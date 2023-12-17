@@ -5,7 +5,8 @@ import com.cuit.studentskilldisplaysystem.model.domain.Skill;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Data
 public class SkillVo {
@@ -23,7 +24,7 @@ public class SkillVo {
     /**
      * 学生技能成绩（json）
      */
-    private HashMap<String, String> studentSkillScore;
+    private List<Map> studentSkillScore;
 
     /**
      * 包装类转对象
@@ -37,7 +38,7 @@ public class SkillVo {
         }
         Skill skill = new Skill();
         BeanUtils.copyProperties(skillVo, skill);
-        HashMap<String, String> voStudentSkillScore = skillVo.getStudentSkillScore();
+        List<Map> voStudentSkillScore = skillVo.getStudentSkillScore();
         if (voStudentSkillScore != null) {
             skill.setStudentSkillScore(JSONUtil.toJsonStr(voStudentSkillScore));
         }
@@ -58,7 +59,7 @@ public class SkillVo {
         SkillVo skillVo = new SkillVo();
         BeanUtils.copyProperties(skill, skillVo);
         String studentSkillScoreStr = skill.getStudentSkillScore();
-        HashMap<String, String> voStudentSkillScore = JSONUtil.parse(studentSkillScoreStr).toBean(HashMap.class);
+        List<Map> voStudentSkillScore = JSONUtil.parse(studentSkillScoreStr).toBean(List.class);
         skillVo.setStudentSkillScore(voStudentSkillScore);
         System.out.println(skillVo.getStudentSkillScore());
         return skillVo;

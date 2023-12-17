@@ -286,6 +286,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public Boolean userAdd(User user) {
         String studentId = java.util.UUID.randomUUID().toString().replace("-", "");
         user.setId(studentId);
+        user.setUserRole(ROLE_STUDENT);
+        user.setUserAccount(String.valueOf(user.getStudentNumber()));
+        user.setUserPassword("123456");
         user.setIsDelete(0);
         Skill skill = new Skill();
         String skillId = java.util.UUID.randomUUID().toString().replace("-", "");
