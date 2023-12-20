@@ -86,8 +86,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     private UserVo getSafeUser(User user) {
         UserVo safeUser = new UserVo();
+        QueryWrapper<Academy> academyQueryWrapper = new QueryWrapper<>();
+        academyQueryWrapper.eq("id", user.getStudentAcademyId());
+        Academy academy = academyMapper.selectOne(academyQueryWrapper);
         //使用hutool工具类拷贝用户对象的属性给Vo类对象，进行脱敏
         BeanUtil.copyProperties(user, safeUser);
+        safeUser.setStudentAcademy(academy.getAcademyName());
         return safeUser;
     }
 

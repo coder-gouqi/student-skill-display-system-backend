@@ -39,7 +39,7 @@ public class StudentScoreJob {
 
 
     //每一分钟执行学生技能分数计算
-    @Scheduled(cron = "0 */10 * * * ?")
+    @Scheduled(cron = "0 */1 * * * ?")
     public void calculateScoreJob() {
 
         List<Skill> skillList = skillService.selectAll();

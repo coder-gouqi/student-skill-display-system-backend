@@ -24,10 +24,11 @@ public class WebConfig {
         // 允许跨域的方法
         config.addAllowedMethod("*");
         // 可访问的外部域
-        config.addAllowedOrigin("*");
+//        config.addAllowedOrigin("*");
+        config.addAllowedOrigin("http://localhost:8081,http://43.136.130.87");
         // 需要跨域用户凭证（cookie、HTTP认证及客户端SSL证明等）
-        //config.setAllowCredentials(true);
-        //config.addAllowedOriginPattern("*");
+        config.setAllowCredentials(true);
+        config.addAllowedOriginPattern("*");
 
         // 跨域路径配置
         source.registerCorsConfiguration("/**", config);
