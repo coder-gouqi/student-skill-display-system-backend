@@ -1,6 +1,8 @@
 package com.cuit.studentskilldisplaysystem.job;
 
 import cn.hutool.json.JSONUtil;
+import com.cuit.studentskilldisplaysystem.common.StatusResponseCode;
+import com.cuit.studentskilldisplaysystem.exception.ThrowUtils;
 import com.cuit.studentskilldisplaysystem.model.domain.Course;
 import com.cuit.studentskilldisplaysystem.model.domain.Score;
 import com.cuit.studentskilldisplaysystem.model.domain.Skill;
@@ -14,8 +16,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @EnableScheduling
@@ -35,7 +39,7 @@ public class StudentScoreJob {
 
 
     //每一分钟执行学生技能分数计算
-    @Scheduled(cron = "0 */10 * * * ?")
+    @Scheduled(cron = "0 */1 * * * ?")
     public void calculateScoreJob() {
 
         List<Skill> skillList = skillService.selectAll();
@@ -45,37 +49,40 @@ public class StudentScoreJob {
 
         double sum;
         int count;
+        double average;
         HashMap<String, String> hashMap;
-
+        List<Map> mapList;
         for (Skill skill : skillList) {
             String studentId = skill.getStudentId();
-            hashMap = new HashMap<>();
+            mapList = new ArrayList<>();
             for (SkillIndex skillIndex : skillIndexList) {
                 String skillIndexId = skillIndex.getId();
+                hashMap = new HashMap<>();
                 sum = 0;
                 count = 0;
                 for (Score score : scoreList) {
                     if (score.getStudentId().equals(studentId)) {
                         for (Course course : courseList) {
                             if (course.getId().equals(score.getCourseId()) && course.getCourseSkillIndexId().equals(skillIndexId)) {
-                                sum += score.getStudentScore();
+                                sum += score.getStudentScore() * course.getCourseWeight();
                                 count++;
                             }
                         }
                     }
                 }
                 String skillIndexName = skillIndex.getSkillIndexName();
-                double average = (sum / count);
-                hashMap.put(skillIndexName, String.valueOf(average));
+                if (sum == 0) {
+                    average = 0;
+                } else {
+                    average = (sum / count);
+                }
+                hashMap.put("skillIndexName", skillIndexName);
+                hashMap.put("skillIndexScore", String.format("%.2f", average));
+                mapList.add(hashMap);
             }
-            skill.setStudentSkillScore(JSONUtil.toJsonStr(hashMap));
-            boolean byId = skillService.updateById(skill);
-            System.out.println(byId);
+            skill.setStudentSkillScore(JSONUtil.toJsonStr(mapList));
+            boolean result = skillService.updateById(skill);
+            ThrowUtils.throwIf(!result, StatusResponseCode.SYSTEM_ERROR);
         }
     }
-
-    //取出对应的指标id
-
-    //课程表中指标id为这个的课程id
-    //到成绩表中查找课程id,学生id关联起来的成绩进行计算
 }

@@ -16,6 +16,11 @@ public class ScoreVo {
     private String studentName;
 
     /**
+     * 学生姓名
+     */
+    private Integer studentNumber;
+
+    /**
      * 课程名称
      */
     private String courseName;

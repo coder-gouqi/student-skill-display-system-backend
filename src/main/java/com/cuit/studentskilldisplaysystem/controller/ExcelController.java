@@ -63,7 +63,7 @@ public class ExcelController {
      * @param type
      * @return
      */
-    @RequestMapping("/export")
+    @GetMapping("/export")
     public void exportExcel(@RequestParam("type") String type, HttpServletResponse response) {
         StatusResponse statusResponse = new StatusResponse();
         Boolean result = false;

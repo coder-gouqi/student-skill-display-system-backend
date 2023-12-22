@@ -32,6 +32,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @description 针对表【score】的数据库操作Service实现
@@ -77,7 +78,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                 score.setId(id);
                 //遍历，将学生姓名匹配的学生id，赋值给学生成绩的学生id属性
                 for (User user : userList) {
-                    if (user.getUserName().equals(scoreForExcel.getStudentName())) {
+                    if (user.getUserName().equals(scoreForExcel.getStudentName()) && Objects.equals(user.getStudentNumber(), scoreForExcel.getStudentNumber())) {
                         score.setStudentId(user.getId());
                     }
                 }
@@ -129,6 +130,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
                 for (User user : userList) {
                     if (score.getStudentId().equals(user.getId())) {
                         scoreForExcel.setStudentName(user.getUserName());
+                        scoreForExcel.setStudentNumber(user.getStudentNumber());
                     }
                 }
                 for (Course course : courseList) {
@@ -182,6 +184,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
 
         MPJLambdaWrapper<Score> scoreQueryWrapper = new MPJLambdaWrapper<>();
         scoreQueryWrapper.selectAll(Score.class);
+        scoreQueryWrapper.selectAs(User::getStudentNumber, ScoreVo::getStudentNumber);
         scoreQueryWrapper.selectAs(User::getUserName, ScoreVo::getStudentName);
         scoreQueryWrapper.selectAs(Course::getCourseName, ScoreVo::getCourseName);
         scoreQueryWrapper.leftJoin(User.class, User::getId, Score::getStudentId);

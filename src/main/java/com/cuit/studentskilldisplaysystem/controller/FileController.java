@@ -1,8 +1,9 @@
 package com.cuit.studentskilldisplaysystem.controller;
 
-import cn.hutool.core.io.FileUtil;
-import org.springframework.util.ResourceUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -23,22 +24,21 @@ public class FileController {
 
         String savePath = "";
         try {
-            String userDir = System.getProperty("user.dir");
             String fileName = file.getOriginalFilename();
             //静态资源目录
-            File uploadPath = new File(userDir + File.separator + "file" + File.separator + "image" + File.separator + type + File.separator);
+            File uploadPath = new File(File.separator + "www" + File.separator + "wwwroot" + File.separator + "43.136.130.87" + File.separator + "file" + File.separator + "image" + File.separator + type + File.separator);
             if (!uploadPath.exists()) {
                 uploadPath.mkdirs();
             }
             file.transferTo(new File(uploadPath, fileName));
 
             //target目录，不能永久保存,后台重启数据丢失
-            String targetPath = ResourceUtils.getURL("classpath:").getPath();
-            File targetUploadPath = new File(targetPath + "static" + File.separator + "image" + File.separator + type + File.separator);
-            if (!targetUploadPath.exists()) {
-                targetUploadPath.mkdirs();
-            }
-            FileUtil.copy(uploadPath + File.separator + fileName, targetUploadPath + File.separator + fileName, true);
+//            String targetPath = ResourceUtils.getURL("classpath:").getPath();
+//            File targetUploadPath = new File(targetPath + "static" + File.separator + "image" + File.separator + type + File.separator);
+//            if (!targetUploadPath.exists()) {
+//                targetUploadPath.mkdirs();
+//            }
+//            FileUtil.copy(uploadPath + File.separator + fileName, targetUploadPath + File.separator + fileName, true);
 
             savePath = "file" + File.separator + "image" + File.separator + type + File.separator + fileName;
         } catch (IOException e) {

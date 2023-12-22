@@ -3,9 +3,12 @@ spring:
     name: student-skill-display-system
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/system
-    username: root
-    password: 123456
+#    url: jdbc:mysql://localhost:3306/system
+#    username: root
+#    password: 123456
+    url: jdbc:mysql://43.136.130.87:3306/system
+    username: system
+    password: system
   servlet:
     multipart:
       max-file-size: 10MB
@@ -20,6 +23,10 @@ server:
   port: 8080
   servlet:
     context-path: /system
+    session:
+      cookie:
+        max-age: 2592000
+        path: /system
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
   configuration:
